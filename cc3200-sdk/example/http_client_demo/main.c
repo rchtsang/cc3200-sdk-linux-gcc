@@ -36,11 +36,6 @@
 //			to compile library (webclient) with HTTPCli_LIBTYPE_MIN option. For full
 //			mode RTOS is needed.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_HTTP_Client_Demo
-// or
-// docs\examples\CC32xx HTTP Client Demo.pdf
-//
 //*****************************************************************************
 
 
@@ -70,7 +65,7 @@
 // JSON Parser
 #include "jsmn.h"
 
-#define APPLICATION_VERSION "1.1.1"
+#define APPLICATION_VERSION "1.4.0"
 #define APP_NAME            "HTTP Client"
 
 #define POST_REQUEST_URI 	"/post"

@@ -99,4 +99,3 @@
 #undef ROM_PRCMSRAMRetentionEnable
 #undef ROM_PRCMSRAMRetentionDisable
 #undef ROM_PRCMDeepSleepEnter
-#undef ROM_HwSpinLockTest

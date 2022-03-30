@@ -161,6 +161,7 @@ typedef enum
 #define SL_GENERAL_ERROR_CON_MGMT_STATUS_SG_RESELECT                (-110)  
 #define SL_GENERAL_ERROR_CON_MGMT_STATUS_ROC_FAILURE                (-111)  
 #define SL_GENERAL_ERROR_CON_MGMT_STATUS_MIC_FAILURE                (-112)  
+#define SL_GENERAL_ERROR_CON_MGMT_STATUS_WPA_4WAY_HANDSHAKE_NOTSYNC	(-113)
 /* end of WLAN connection management error statuses */
 #define SL_ERROR_WAKELOCK_ERROR_PREFIX                      (-115)  /* Wake lock expired */
 #define SL_ERROR_LENGTH_ERROR_PREFIX                        (-116)  /* Uart header length error */

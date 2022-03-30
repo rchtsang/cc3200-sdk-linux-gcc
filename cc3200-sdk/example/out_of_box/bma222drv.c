@@ -85,7 +85,7 @@ GetRegisterValue(unsigned char ucRegAddr, unsigned char *pucRegValue)
     if(I2C_IF_ReadFrom(BMA222_DEV_ADDR, &ucRegAddr, 1,
                    pucRegValue, 1) != 0)
     {
-        DBG_PRINT("I2C readfrom failed\n\r");
+        DBG_PRINT("BMA222 sensor I2C ReadFrom failed\n\r");
         return FAILURE;
     }
 

@@ -955,7 +955,7 @@
     <name>$PROJ_DIR$/../pinmux.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$/../startup_ewarm.c</name>
+    <name>$PROJ_DIR$/../../common/startup_ewarm.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/../systick_if.c</name>

@@ -40,10 +40,6 @@
 // Application Overview - This application aims to exhibit the CC3200 device as
 //                        AP. Developers/users can refer the function or re-use 
 //                        them while writing new application.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Getting_Started_with_WLAN_AP
-// or
-// docs\examples\CC32xx_Getting_Started_with_WLAN_AP.pdf
 //
 //*****************************************************************************
 
@@ -81,7 +77,7 @@
 #include "pinmux.h"
 
 #define APP_NAME                "WLAN AP"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define OSI_STACK_SIZE          2048
 
 
@@ -113,7 +109,7 @@ unsigned long  g_ulStaIp = 0;
 unsigned long  g_ulPingPacketsRecv = 0;
 unsigned long  g_uiGatewayIP = 0;
 
-#if defined(gcc) || defined(ccs)
+#if defined(gcc)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -930,7 +926,7 @@ BoardInit(void)
 //*****************************************************************************
 //                            MAIN FUNCTION
 //*****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
   

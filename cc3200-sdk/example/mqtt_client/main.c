@@ -20,11 +20,6 @@
 //                          clients can inter-communicate using appropriate
 //                          topic names.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_MQTT_Client
-// or
-// docs\examples\CC32xx_MQTT_Client.pdf
-//
 //*****************************************************************************
 
 //*****************************************************************************
@@ -68,7 +63,7 @@
 // application specific includes
 #include "pinmux.h"
 
-#define APPLICATION_VERSION 	"1.1.1"
+#define APPLICATION_VERSION 	"1.4.0"
 
 /*Operate Lib in MQTT 3.1 mode.*/
 #define MQTT_3_1_1              false /*MQTT 3.1.1 */
@@ -80,8 +75,11 @@
 #define WILL_RETAIN             false
 
 /*Defining Broker IP address and port Number*/
-#define SERVER_ADDRESS          "messagesight.demos.ibm.com"
-#define PORT_NUMBER             1883
+#define SERVER_ADDRESS           "mqtt.eclipse.org"
+#define SERVER_IP_ADDRESS        "192.168.178.67"
+#define PORT_NUMBER              1883
+#define SECURED_PORT_NUMBER      8883
+#define LOOPBACK_PORT            1882
 
 #define MAX_BROKER_CONN         1
 
@@ -176,7 +174,7 @@ void MqttClient(void *pvParameters);
 #if defined(ewarm)
 extern uVectorEntry __vector_table;
 #endif
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #endif
@@ -206,7 +204,7 @@ connect_config usr_connect_config[] =
             true,
         },
         NULL,
-        (unsigned char*)"user1",
+        "user1",
         NULL,
         NULL,
         true,
@@ -232,8 +230,8 @@ SlMqttClientLibCfg_t Mqtt_Client={
 /*Publishing topics and messages*/
 const char *pub_topic_sw2 = PUB_TOPIC_FOR_SW2;
 const char *pub_topic_sw3 = PUB_TOPIC_FOR_SW3;
-unsigned char *data_sw2={(unsigned char*)"Push button sw2 is pressed on CC32XX device"};
-unsigned char *data_sw3={(unsigned char*)"Push button sw3 is pressed on CC32XX device"};
+unsigned char *data_sw2={"Push button sw2 is pressed on CC32XX device"};
+unsigned char *data_sw3={"Push button sw3 is pressed on CC32XX device"};
 
 void *app_hndl = (void*)usr_connect_config;
 //*****************************************************************************
@@ -572,7 +570,7 @@ void BoardInit(void)
     //
     // Set vector table base
     //
-    #if defined(ccs) || defined(gcc)
+    #if defined(ccs)
         IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
     #endif
     #if defined(ewarm)
@@ -681,7 +679,7 @@ void MqttClient(void *pvParameters)
        LOOP_FOREVER();
     }
 
-    lRetVal = sl_WlanProfileAdd((signed char*)SSID_NAME,strlen(SSID_NAME),0,&SecurityParams,0,1,0);
+    lRetVal = sl_WlanProfileAdd(SSID_NAME,strlen(SSID_NAME),0,&SecurityParams,0,1,0);
 
     //set AUTO policy
     lRetVal = sl_WlanPolicySet(SL_POLICY_CONNECTION,
@@ -915,7 +913,7 @@ end:
 //! \return None
 //!
 //*****************************************************************************
-int main()
+void main()
 { 
     long lRetVal = -1;
     //

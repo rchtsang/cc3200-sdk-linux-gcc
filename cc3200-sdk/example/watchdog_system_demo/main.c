@@ -83,7 +83,7 @@
 
 #define IP_ADDR                 0xc0a8006A /* 192.168.0.106 */
 #define APPLICATION_NAME        "Watchdog System Demo"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define PORT_NUM           5001
 #define BUF_SIZE           1400
@@ -687,11 +687,11 @@ static long WlanConnect()
     SlSecParams_t secParams = {0};
     signed long lretVal = 0;
 
-    secParams.Key = (signed char*)SECURITY_KEY;
+    secParams.Key = SECURITY_KEY;
     secParams.KeyLen = strlen(SECURITY_KEY);
     secParams.Type = SECURITY_TYPE;
 
-    lretVal = sl_WlanConnect((signed char*)SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
+    lretVal = sl_WlanConnect(SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
     ASSERT_ON_ERROR(lretVal);
 
     while((!IS_CONNECTED(g_ulStatus)) || (!IS_IP_ACQUIRED(g_ulStatus)))
@@ -785,7 +785,7 @@ static inline void HIBEntrePreamble()
 //****************************************************************************
 //                            MAIN FUNCTION
 //****************************************************************************
-int main()
+void main()
 {
     long retVal = -1;
     unsigned long ulResetCause;

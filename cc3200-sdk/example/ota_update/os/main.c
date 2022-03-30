@@ -366,7 +366,7 @@ static void TimeToString(unsigned long ulTime, unsigned char *ulStrTime)
     ulGeneralVar = ulTime/SEC_IN_DAY;
     ulGeneralVar /= 365;
 
-    ulStrTime += sprintf((char *)ulStrTime,"%4d ",YEAR2013 + (int)ulGeneralVar);
+    ulStrTime += sprintf((char *)ulStrTime,"%4d ",YEAR2013 + ulGeneralVar);
 
     //
     // time
@@ -378,7 +378,7 @@ static void TimeToString(unsigned long ulTime, unsigned char *ulStrTime)
 
     // number of hours
     ulGeneralVar /= SEC_IN_HOUR;
-    ulStrTime += sprintf((char *)ulStrTime,"%02d:",(int)ulGeneralVar);
+    ulStrTime += sprintf((char *)ulStrTime,"%02d:",ulGeneralVar);
 
 
     // number of minutes per hour
@@ -386,9 +386,9 @@ static void TimeToString(unsigned long ulTime, unsigned char *ulStrTime)
 
     // number of seconds per minute
     ulGeneralVar1 %= SEC_IN_MIN;
-    ulStrTime += sprintf((char *)ulStrTime,"%02d:",(int)ulGeneralVar);
+    ulStrTime += sprintf((char *)ulStrTime,"%02d:",ulGeneralVar);
 
-    sprintf((char *)ulStrTime,"%02d",(int)ulGeneralVar1);
+    sprintf((char *)ulStrTime,"%02d",ulGeneralVar1);
 
 }
 
@@ -617,14 +617,14 @@ void GetNTPTimeTask(void *pvParameters)
 
     sprintf(sDisplayInfo.ucNwpVersion,
             "%d.%d.%d.%d.31.%d.%d.%d.%d.%d.%d.%d.%d",
-            (int)sDisplayInfo.sNwpVersion.NwpVersion[0],
-            (int)sDisplayInfo.sNwpVersion.NwpVersion[1],
-            (int)sDisplayInfo.sNwpVersion.NwpVersion[2],
-            (int)sDisplayInfo.sNwpVersion.NwpVersion[3],
-            (int)sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[0],
-            (int)sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[1],
-            (int)sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[2],
-            (int)sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[3],
+            sDisplayInfo.sNwpVersion.NwpVersion[0],
+            sDisplayInfo.sNwpVersion.NwpVersion[1],
+            sDisplayInfo.sNwpVersion.NwpVersion[2],
+            sDisplayInfo.sNwpVersion.NwpVersion[3],
+            sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[0],
+            sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[1],
+            sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[2],
+            sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.FwVersion[3],
             sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.PhyVersion[0],
             sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.PhyVersion[1],
             sDisplayInfo.sNwpVersion.ChipFwAndPhyVersion.PhyVersion[2],
@@ -944,13 +944,7 @@ int OTAServerInfoSet(void **pvOtaApp, char *vendorStr)
     g_otaOptServerInfo.ip_address = OTA_SERVER_IP_ADDRESS;
     g_otaOptServerInfo.secured_connection = OTA_SERVER_SECURED;
     strcpy((char *)g_otaOptServerInfo.server_domain, OTA_SERVER_NAME);
-    strcpy((char *)g_otaOptServerInfo.rest_update_chk, OTA_SERVER_REST_UPDATE_CHK);
-    strcpy((char *)g_otaOptServerInfo.rest_rsrc_metadata, OTA_SERVER_REST_RSRC_METADATA);
-    strcpy((char *)g_otaOptServerInfo.rest_hdr, OTA_SERVER_REST_HDR);
-    strcpy((char *)g_otaOptServerInfo.rest_hdr_val, OTA_SERVER_REST_HDR_VAL);
-    strcpy((char *)g_otaOptServerInfo.log_server_name, LOG_SERVER_NAME);
-    strcpy((char *)g_otaOptServerInfo.rest_files_put, OTA_SERVER_REST_FILES_PUT);
-    NetMACAddressGet(g_otaOptServerInfo.log_mac_address);
+    strcpy((char *)g_otaOptServerInfo.rest_hdr_val, OTA_SERVER_APP_TOKEN);
 
     //
     // Set OTA server Info
@@ -1002,7 +996,10 @@ void OTAUpdateTask(void *pvParameters)
 
     ulVendorStrLen = strlen(OTA_VENDOR_STRING);
 
-    sprintf((char *)&ucVendorStr[ulVendorStrLen],"%02lu",
+        sprintf((char *)&ucVendorStr[ulVendorStrLen],"_%02lu%02lu%02lu%02lu",
+            sDisplayInfo.sNwpVersion.NwpVersion[0],
+            sDisplayInfo.sNwpVersion.NwpVersion[1],
+            sDisplayInfo.sNwpVersion.NwpVersion[2],
             sDisplayInfo.sNwpVersion.NwpVersion[3]);
 
     while(1)
@@ -1208,7 +1205,7 @@ void OnPressSW3Handler()
 //*****************************************************************************
 //
 //*****************************************************************************
-int main()
+void main()
 {
 
   //

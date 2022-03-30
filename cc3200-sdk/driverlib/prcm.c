@@ -1852,14 +1852,14 @@ void PRCMCC3200MCUInit()
     HWREG(0x4402E184) |= 0x2;
 
     //
-    // Change UART pins(55,57) mode to PIN_MODE_0 if they are in PIN_MODE_1
+    // Change UART pins(55,57) mode to PIN_MODE_0 if they are in PIN_MODE_3
     //
-    if( (HWREG(0x4402E0A4) & 0xF) == 0x1)
+    if( (HWREG(0x4402E0A4) & 0xF) == 0x3)
     {
         HWREG(0x4402E0A4) = ((HWREG(0x4402E0A4) & ~0xF));
     }
 
-    if( (HWREG(0x4402E0A8) & 0xF) == 0x1)
+    if( (HWREG(0x4402E0A8) & 0xF) == 0x3)
     {
         HWREG(0x4402E0A8) = ((HWREG(0x4402E0A8) & ~0xF));
     }

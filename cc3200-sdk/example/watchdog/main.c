@@ -43,10 +43,6 @@
 //                        inverted so that it is easy to see that it is being 
 //                        fed, which occurs once every second. And after 10 
 //                        cycles of interrupt no more feeding.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Watchdog_Demo_Application
-// or
-// docs\examples\CC32xx_Watchdog_Demo_Application.pdf
 //
 //*****************************************************************************
 
@@ -82,7 +78,7 @@
 #include "wdt_if.h"
 #include "pinmux.h"
 
-#define APPLICATION_VERSION          "1.1.1"
+#define APPLICATION_VERSION          "1.4.0"
 #define WD_PERIOD_MS                 1000
 #define MAP_SysCtlClockGet           80000000
 #define LED_GPIO                     MCU_RED_LED_GPIO    /* RED LED */
@@ -95,7 +91,7 @@
 volatile tBoolean g_bFeedWatchdog = true;
 volatile unsigned long g_ulWatchdogCycles;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -167,7 +163,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -193,7 +189,7 @@ BoardInit(void)
 //! \return None
 //
 //*****************************************************************************
-int main(void)
+void main(void)
 {
     tBoolean bRetcode;
     //

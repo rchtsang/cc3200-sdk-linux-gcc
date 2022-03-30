@@ -20,11 +20,6 @@
 //                          to end communcation leveraging the entire network
 //                          stack and UART interface.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Serial_Wifi
-// or
-// docs\examples\CC32xx_Serial_Wifi.pdf
-//
 //*****************************************************************************
 
 
@@ -52,7 +47,7 @@
 #include "common.h"
 
 #define APPLICATION_NAME        "SERIAL WiFi"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define OSI_STACK_SIZE         2048
 
 //****************************************************************************
@@ -70,7 +65,7 @@ static void BoardInit(void);
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
 //*****************************************************************************
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -116,7 +111,7 @@ static void BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)

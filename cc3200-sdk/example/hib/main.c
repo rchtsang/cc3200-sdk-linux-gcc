@@ -43,11 +43,6 @@
 //                        wakes up periodically from hibernate and broadcasts a
 //                        message and then enters hibernate again.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Hibernate_Application
-// or
-// docs\examples\CC32xx_Hibernate_Application.pdf
-//
 //*****************************************************************************
 
 
@@ -88,7 +83,7 @@
 #include "pinmux.h"
 
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APPNAME                 "Hibernate"
 #define APP_UDP_PORT            5001
 #define SYS_CLK                 80000000
@@ -102,7 +97,7 @@
 SlSecParams_t SecurityParams = {0}; // AP Security Parameters
 unsigned short g_usTimerInts = 0;   // Variable used in Timer Interrupt Handler
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -434,7 +429,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -464,7 +459,7 @@ BoardInit(void)
 //! \return None.
 //
 //****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
 

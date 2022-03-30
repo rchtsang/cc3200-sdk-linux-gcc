@@ -36,8 +36,8 @@
 #include "HttpDynamic.h"
 #include "HttpStatic.h"
 #include <string.h>
-#include "HttpConfig.h"
-#include "HttpString.h"
+#include "HTTPConfig.h"
+#include "HTTPString.h"
 #include "sha1.h"
 #include "osi.h"
 #include "WebSockHandler.h"
@@ -586,7 +586,14 @@ static int HttpCore_HandleRequestPacket(UINT16 uConnection, struct HttpBlob pack
             // Move to WebSockHandler.c if we are in the DataRecv state
             if(g_state.connections[uConnection].connectionState == WebSocketDataRecv)
             	if(WSCore_DataRecv(uConnection, &packet))
-            		return 1;
+            	{
+            	    return 1;
+            	}
+            	else
+            	{
+            	    HttpDebug("Error in WSCore_DataRecv\n\r");
+            	    return 0;
+            	}
 
             // Respond to websocket handshake
             if(g_state.connections[uConnection].connectionState == WebSocketResponse)

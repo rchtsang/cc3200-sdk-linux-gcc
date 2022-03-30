@@ -43,11 +43,6 @@
 //                            the device and server is based on the Network Time
 //                            Protocol (NTP)
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Info_Center_Get_Time_Application
-// or
-// docs\examples\CC32xx_Info_Center_Get_Time_Application.pdf
-//
 //*****************************************************************************
 
 
@@ -92,7 +87,7 @@
 #include "common.h"
 
 #define APP_NAME                "Get Time"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define TIME2013                3565987200u      /* 113 years + 28 days(leap) */
 #define YEAR2013                2013
@@ -133,14 +128,10 @@ extern uVectorEntry __vector_table;
 //!    ##
 //!    ##          hostname         |        IP       |       location
 //!    ## -----------------------------------------------------------------------------
-//!    ##   nist1-nj2.ustiming.org  | 165.193.126.229 |  Weehawken, NJ
-//!    ##   nist1-pa.ustiming.org   | 206.246.122.250 |  Hatfield, PA
 //!    ##   time-a.nist.gov         | 129.6.15.28     |  NIST, Gaithersburg, Maryland
 //!    ##   time-b.nist.gov         | 129.6.15.29     |  NIST, Gaithersburg, Maryland
 //!    ##   time-c.nist.gov         | 129.6.15.30     |  NIST, Gaithersburg, Maryland
-//!    ##   ntp-nist.ldsbc.edu      | 198.60.73.8     |  LDSBC, Salt Lake City, Utah
 //!    ##   nist1-macon.macon.ga.us | 98.175.203.200  |  Macon, Georgia
-//!
 //!    ##   For more SNTP server link visit 'http://tf.nist.gov/tf-cgi/servers.cgi'
 //!    ###################################################################################
 const char g_acSNTPserver[30] = "time-a.nist.gov"; //Add any one of the above servers
@@ -375,7 +366,7 @@ long GetSNTPTime(unsigned char ucGmtDiffHr, unsigned char ucGmtDiffMins)
         // restore the day in current month
         //
         g_sAppData.isGeneralVar += g_acNumOfDaysPerMonth[iIndex];
-        g_sAppData.uisCCLen = itoa_incompat(g_sAppData.isGeneralVar + 1,
+        g_sAppData.uisCCLen = itoa(g_sAppData.isGeneralVar + 1,
                                    g_sAppData.pcCCPtr);
         g_sAppData.pcCCPtr += g_sAppData.uisCCLen;
         *g_sAppData.pcCCPtr++ = '\x20';
@@ -390,7 +381,7 @@ long GetSNTPTime(unsigned char ucGmtDiffHr, unsigned char ucGmtDiffMins)
 
         // number of hours
         g_sAppData.ulGeneralVar /= SEC_IN_HOUR;
-        g_sAppData.uisCCLen = itoa_incompat(g_sAppData.ulGeneralVar,
+        g_sAppData.uisCCLen = itoa(g_sAppData.ulGeneralVar,
                                    g_sAppData.pcCCPtr);
         g_sAppData.pcCCPtr += g_sAppData.uisCCLen;
         *g_sAppData.pcCCPtr++ = ':';
@@ -400,11 +391,11 @@ long GetSNTPTime(unsigned char ucGmtDiffHr, unsigned char ucGmtDiffMins)
 
         // number of seconds per minute
         g_sAppData.ulGeneralVar1 %= SEC_IN_MIN;
-        g_sAppData.uisCCLen = itoa_incompat(g_sAppData.ulGeneralVar,
+        g_sAppData.uisCCLen = itoa(g_sAppData.ulGeneralVar,
                                    g_sAppData.pcCCPtr);
         g_sAppData.pcCCPtr += g_sAppData.uisCCLen;
         *g_sAppData.pcCCPtr++ = ':';
-        g_sAppData.uisCCLen = itoa_incompat(g_sAppData.ulGeneralVar1,
+        g_sAppData.uisCCLen = itoa(g_sAppData.ulGeneralVar1,
                                    g_sAppData.pcCCPtr);
         g_sAppData.pcCCPtr += g_sAppData.uisCCLen;
         *g_sAppData.pcCCPtr++ = '\x20';
@@ -415,7 +406,7 @@ long GetSNTPTime(unsigned char ucGmtDiffHr, unsigned char ucGmtDiffMins)
         //
         g_sAppData.ulGeneralVar = g_sAppData.ulElapsedSec/SEC_IN_DAY;
         g_sAppData.ulGeneralVar /= 365;
-        g_sAppData.uisCCLen = itoa_incompat(YEAR2013 + g_sAppData.ulGeneralVar,
+        g_sAppData.uisCCLen = itoa(YEAR2013 + g_sAppData.ulGeneralVar,
                                    g_sAppData.pcCCPtr);
         g_sAppData.pcCCPtr += g_sAppData.uisCCLen;
 
@@ -742,7 +733,7 @@ BoardInit(void)
 //! \return None.
 //
 //****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
 

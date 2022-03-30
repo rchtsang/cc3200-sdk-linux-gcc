@@ -214,7 +214,7 @@ _i16 sl_NetAppGetServiceList(const _u8  IndexOffest,
 
 	/*Check the size of the requested services is smaller than size of the user buffer.
 	  If not an error is returned in order to avoid overwriting memory. */
-	if(RxBufferLength < BufferSize)
+	if(RxBufferLength <= BufferSize)
 	{
 		return SL_ERROR_NETAPP_RX_BUFFER_LENGTH_ERROR;
 	}

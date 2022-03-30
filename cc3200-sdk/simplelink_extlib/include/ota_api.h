@@ -35,6 +35,7 @@ extern "C" {
 #define MAX_USER_PASS_STR   8
 #define MAX_CERT_STR        32
 #define MAX_KEY_STR         32
+#define MAX_CDN_URL_LEN     640
 
 /******************************************************************************
  * Server info Structure
@@ -44,19 +45,12 @@ typedef struct
     _i32    ip_address; /* 0x0 – use server name */
     _i32    secured_connection;
     _u8   server_domain[MAX_SERVER_NAME];
-    _u8   rest_update_chk[MAX_PATH_PREFIX];
-    _u8   rest_rsrc_metadata[MAX_PATH_PREFIX];
-    _u8   rest_hdr[MAX_REST_HDRS_SIZE];
     _u8   rest_hdr_val[MAX_REST_HDRS_SIZE];
     _u8   user_name[MAX_USER_NAME_STR];
     _u8   user_pass[MAX_USER_PASS_STR];
     _u8   ca_cert_filename[MAX_CERT_STR];
     _u8   client_cert_filename[MAX_CERT_STR];
     _u8   privatekey_filename[MAX_KEY_STR];
-    /* logger */
-    _u8   log_server_name[MAX_SERVER_NAME];
-    _u8   rest_files_put[MAX_REST_HDRS_SIZE];
-    _u8   log_mac_address[6];
 } OtaOptServerInfo_t;
 
 /******************************************************************************
@@ -89,7 +83,7 @@ typedef struct
 typedef struct
 {
     /* files server name */
-    _u8 cdn_url[256];
+    _u8 cdn_url[MAX_CDN_URL_LEN];
 
     /* file flags */
     _i32  flags;
@@ -125,8 +119,7 @@ typedef enum
 typedef enum
 {
     EXTLIB_OTA_GET_OPT_IS_ACTIVE,
-    EXTLIB_OTA_GET_OPT_IS_PENDING_COMMIT,
-    EXTLIB_OTA_GET_OPT_PRINT_STAT
+    EXTLIB_OTA_GET_OPT_IS_PENDING_COMMIT
 } OtaGetOpt_e;
 
 /******************************************************************************

@@ -43,11 +43,6 @@
 //                          be edited based on the SSID of the enterprise
 //                          network.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_ENT_WLAN
-// or
-// docs\examples\CC32xx ENT WLAN.pdf
-//
 //*****************************************************************************
 
 
@@ -80,7 +75,7 @@
 
 
 #define APPLICATION_NAME        "ENT_WLAN"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define SUCCESS                 0
 
 //
@@ -110,7 +105,7 @@ unsigned long  g_ulGatewayIP = 0; //Network Gateway IP address
 unsigned char  g_ucConnectionSSID[SSID_LEN_MAX+1]; //Connection SSID
 unsigned char  g_ucConnectionBSSID[BSSID_LEN_MAX]; //Connection BSSID
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -546,7 +541,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -621,11 +616,11 @@ long EntWlan()
     //start ent wlan connection
 
     eapParams.EapMethod = SL_ENT_EAP_METHOD_PEAP1_MSCHAPv2;
-    eapParams.User = (signed char*)USER_NAME;
+    eapParams.User = USER_NAME;
     eapParams.UserLen = strlen((const char *)eapParams.User);
     eapParams.AnonUserLen = 0;
 
-    g_SecParams.Key = (signed char*)PASSWORD;
+    g_SecParams.Key = PASSWORD;
     g_SecParams.KeyLen = strlen((const char *)g_SecParams.Key);
     g_SecParams.Type = SL_SEC_TYPE_WPA_ENT;
 
@@ -636,7 +631,7 @@ long EntWlan()
 	sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID, 19, 1 , &pValues);
 
 
-    lRetVal = sl_WlanConnect((signed char*)ENT_NAME,strlen(ENT_NAME),NULL,&g_SecParams, \
+    lRetVal = sl_WlanConnect(ENT_NAME,strlen(ENT_NAME),NULL,&g_SecParams, \
                                  &eapParams);
     ASSERT_ON_ERROR(lRetVal);
 

@@ -28,8 +28,6 @@
 #define SMTP_BUF_LEN 		100
 #define GMAIL_HOST_NAME         "smtp.gmail.com"
 #define GMAIL_HOST_PORT         465
-#define YAHOO_HOST_NAME	        "smtp.mail.yahoo.com"
-#define YAHOO_HOST_PORT		25
 #define USER                    "<username@gmail.com>" //Set Sender/Source Email Address
 #define USER_RFC                "<username@gmail.com>" //Set Sender/Source Email Address
 #define PASS                    "<password>"              //Set Sender/Source Email Password

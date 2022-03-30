@@ -48,7 +48,6 @@ SDK_EXAMPLES = adc \
                aes \
                antenna_selection \
                blinky \
-               camera_application \
                connection_policy \
                crc \
                des \
@@ -101,7 +100,6 @@ SDK_EXAMPLES = adc \
                udp_socket \
                watchdog \
                watchdog_system_demo \
-               websock_camera \
                wifi_audio_app \
                xmpp_client
 
@@ -114,20 +112,21 @@ clean: clean_libs clean_examples
 libs: $(SDK_LIBS:%=lib/%)
 
 lib/%:
-	@$(MAKE) -C "$*/gcc" all
+	$(MAKE) -C "$*/gcc" all
 
 clean_libs: $(SDK_LIBS:%=clean_lib/%)
 
 clean_lib/%:
-	@$(MAKE) -C "$*/gcc" clean
+	$(MAKE) -C "$*/gcc" clean
 
 examples: $(SDK_EXAMPLES:%=build_example/%)
 
 build_example/%:
-	@$(MAKE) -C "example/$*/gcc" all
+	@echo "\n***************************\n\n\n$*\n\n\n***************************\n"
+	$(MAKE) -C "example/$*/gcc" all
 
 clean_examples: $(SDK_EXAMPLES:%=clean_example/%)
 
 clean_example/%:
-	@$(MAKE) -C "example/$*/gcc" clean
+	$(MAKE) -C "example/$*/gcc" clean
 

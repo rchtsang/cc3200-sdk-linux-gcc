@@ -50,10 +50,6 @@
 //                        - Appliance Control
 //                        - Security System
 //                        - Thermostat
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Out_of_Box_Application
-// or
-// docs\examples\CC32xx_Out_of_Box_Application.pdf
 //
 //*****************************************************************************
 
@@ -100,7 +96,7 @@
 #include "bma222drv.h"
 #include "pinmux.h"
 
-#define APPLICATION_VERSION              "1.1.1"
+#define APPLICATION_VERSION              "1.4.0"
 #define APP_NAME                         "Out of Box"
 #define OOB_TASK_PRIORITY                1
 #define SPAWN_TASK_PRIORITY              9
@@ -132,9 +128,11 @@ static unsigned char g_ucLEDStatus = LED_OFF;
 static unsigned long  g_ulStatus = 0;//SimpleLink Status
 static unsigned char  g_ucConnectionSSID[SSID_LEN_MAX+1]; //Connection SSID
 static unsigned char  g_ucConnectionBSSID[BSSID_LEN_MAX]; //Connection BSSID
+static int g_tmp006Status = 0;
+static int g_bma222Status = 0;
 
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -224,7 +222,7 @@ void vApplicationMallocFailedHook()
 
 //*****************************************************************************
 //
-//! itoa_incompat
+//! itoa
 //!
 //!    @brief  Convert integer to ASCII in decimal base
 //!
@@ -236,7 +234,7 @@ void vApplicationMallocFailedHook()
 //!
 //
 //*****************************************************************************
-static unsigned short itoa_incompat(char cNum, char *cString)
+static unsigned short itoa(char cNum, char *cString)
 {
     char* ptr;
     char uTemp = cNum;
@@ -613,14 +611,24 @@ void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pSlHttpServerEvent,
             if(memcmp(pSlHttpServerEvent->EventData.httpTokenName.data, 
                     GET_token_TEMP, strlen((const char *)GET_token_TEMP)) == 0)
             {
-                float fCurrentTemp;
-                TMP006DrvGetTemp(&fCurrentTemp);
-                char cTemp = (char)fCurrentTemp;
-                short sTempLen = itoa_incompat(cTemp,(char*)ptr);
-                ptr[sTempLen++] = ' ';
-                ptr[sTempLen] = 'F';
-                pSlHttpServerResponse->ResponseData.token_value.len += sTempLen;
-
+                if (g_tmp006Status)
+                {
+                    float fCurrentTemp;
+                    TMP006DrvGetTemp(&fCurrentTemp);
+                    char cTemp = (char)fCurrentTemp;
+                    short sTempLen = itoa(cTemp,(char*)ptr);
+                    ptr[sTempLen++] = ' ';
+                    ptr[sTempLen] = 'F';
+                    pSlHttpServerResponse->ResponseData.token_value.len += sTempLen;
+                }
+                else
+                {
+                    char cTemp = (char)76;
+                    short sTempLen = itoa(cTemp,(char*)ptr);
+                    ptr[sTempLen++] = ' ';
+                    ptr[sTempLen] = 'F';
+                    pSlHttpServerResponse->ResponseData.token_value.len += sTempLen;
+                }
             }
 
             if(memcmp(pSlHttpServerEvent->EventData.httpTokenName.data, 
@@ -636,8 +644,15 @@ void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pSlHttpServerEvent,
             if(memcmp(pSlHttpServerEvent->EventData.httpTokenName.data, 
                        GET_token_ACC, strlen((const char *)GET_token_ACC)) == 0)
             {
+                if (g_bma222Status)
+                {
+                    ReadAccSensor();
+                }
+                else
+                {
+                    g_ucDryerRunning = 0;
+                }
 
-                ReadAccSensor();
                 if(g_ucDryerRunning)
                 {
                     strcpy((char*)pSlHttpServerResponse->ResponseData.token_value.data,"Running");
@@ -649,9 +664,6 @@ void SimpleLinkHttpServerCallback(SlHttpServerEvent_t *pSlHttpServerEvent,
                     pSlHttpServerResponse->ResponseData.token_value.len += strlen("Stopped");
                 }
             }
-
-
-
         }
             break;
 
@@ -956,6 +968,7 @@ long ConnectToNetwork()
             CLR_STATUS_BIT_ALL(g_ulStatus);
 
             //Connect Using Smart Config
+            UART_PRINT("\n\r Connect with SmartConfig \n\r\n\r");
             lRetVal = SmartConfigConnect();
             ASSERT_ON_ERROR(lRetVal);
 
@@ -1091,7 +1104,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif  //ccs
 #if defined(ewarm)
@@ -1112,12 +1125,12 @@ BoardInit(void)
 //****************************************************************************
 //                            MAIN FUNCTION
 //****************************************************************************
-int main()
+void main()
 {
     long   lRetVal = -1;
 
     //
-    // Board Initilization
+    // Board Initialization
     //
     BoardInit();
     
@@ -1153,25 +1166,35 @@ int main()
     if(lRetVal < 0)
     {
         ERR_PRINT(lRetVal);
-        LOOP_FOREVER();
+        DBG_PRINT("I2C open failed\n\r");
     }    
-
-    //Init Temprature Sensor
-    lRetVal = TMP006DrvOpen();
-    if(lRetVal < 0)
+    else
     {
-        ERR_PRINT(lRetVal);
-        LOOP_FOREVER();
-    }    
+        //Init Accelerometer Sensor
+        lRetVal = BMA222Open();
+        if(lRetVal < 0)
+        {
+            ERR_PRINT(lRetVal);
+            DBG_PRINT("BMA222 sensor has error. Check jumpers on LaunchPad.\n\r\n\r");
+        }
+        else
+        {
+            g_bma222Status = 1;
+        }
 
-    //Init Accelerometer Sensor
-    lRetVal = BMA222Open();
-    if(lRetVal < 0)
-    {
-        ERR_PRINT(lRetVal);
-        LOOP_FOREVER();
-    }    
-    
+        //Init Temprature Sensor
+        lRetVal = TMP006DrvOpen();
+        if(lRetVal < 0)
+        {
+            ERR_PRINT(lRetVal);
+            DBG_PRINT("TMP006 sensor has error. Check jumpers on LaunchPad or TMP006 may not be populated. \n\r    Default temperature will be 76 degrees F\n\r\n\r");
+        }
+        else
+        {
+            g_tmp006Status = 1;
+        }
+    }
+
     //
     // Simplelinkspawntask
     //

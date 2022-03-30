@@ -124,19 +124,21 @@ _i16 HttpClient_SendReq(_i16 SockId, _u8 *pHttpReqBuf, _u8 *pReqMethod, _u8 *pSe
 
 _i16  CdnDropboxV2_SendReqDir(_i16 SockId, _u8 *pSendBuf, _u8 *pServerName, _u8 *pVendorDir, _u8 *pVendorToken)
 {
-    char ReqDirCmdBuf[200];
+    _u8 ReqDirCmdBuf[200];
 
-    snprintf(ReqDirCmdBuf, 200,
-             "%s\r\nContent-Type: Application/Json\r\nContent-Length:  %d\r\n\r\n" /* Headers */
-             "{\"path\": \"/%s\"}", /* Data */
-             (const char *)pVendorToken,
-             13 /* {"path": "/"} */ + strlen((const char *)pVendorDir),
-             (const char *)pVendorDir);
+    /* Headers */
+    strcpy((char *)ReqDirCmdBuf, (const char *)pVendorToken);
+    strcat((char *)ReqDirCmdBuf, "\r\nContent-Type: Application/Json\r\nContent-Length:  ");
+    ltoa(13 /* {"path": "/"} */ + strlen((const char *)pVendorDir), (char *)&ReqDirCmdBuf[strlen((const char *)ReqDirCmdBuf)]);
+    strcat((char *)ReqDirCmdBuf, "\r\n\r\n");
+
+    /* Data */
+    strcat((char *)ReqDirCmdBuf, "{\"path\": \"/");
+    strcat((char *)ReqDirCmdBuf, (const char *)pVendorDir);
+    strcat((char *)ReqDirCmdBuf, "\"}");
 
     Report("CdnDropbox_SendReqDir: uri=%s\r\n", OTA_SERVER_REST_REQ_DIR);
-    return HttpClient_SendReq (SockId, pSendBuf, (_u8 *)"POST ", pServerName,
-                               (_u8 *)OTA_SERVER_REST_REQ_DIR , (_u8 *)""/*pVendorDir*/,
-                               (_u8 *)OTA_SERVER_REST_HDR, (_u8 *)ReqDirCmdBuf/*pVendorToken*/);
+    return HttpClient_SendReq (SockId, pSendBuf, (_u8 *)"POST ", pServerName, (_u8 *)OTA_SERVER_REST_REQ_DIR , ""/*pVendorDir*/, (_u8 *)OTA_SERVER_REST_HDR, ReqDirCmdBuf/*pVendorToken*/);
 }
 
 /* DROPBOX V2 API - build get_temporary_link, example
@@ -150,19 +152,21 @@ _i16  CdnDropboxV2_SendReqDir(_i16 SockId, _u8 *pSendBuf, _u8 *pServerName, _u8 
 */
 _i16  CdnDropboxV2_SendReqFileUrl(_i16 SockId, _u8 *pSendBuf, _u8 *pServerName, _u8 *pFileName, _u8 *pVendorToken)
 {
-    char ReqDirCmdBuf[200];
+    _u8 ReqDirCmdBuf[200];
 
-    snprintf(ReqDirCmdBuf, 200,
-             "%s\r\nContent-Type: Application/Json\r\nContent-Length:  %d\r\n\r\n" /* Headers */
-             "{\"path\": \"%s\"}", /* Data */
-             (const char *)pVendorToken,
-             12 /* {"path": ""} */ + strlen((const char *)pFileName),
-             (const char *)pFileName);
+    /* Headers */
+    strcpy((char *)ReqDirCmdBuf, (const char *)pVendorToken);
+    strcat((char *)ReqDirCmdBuf, "\r\nContent-Type: Application/Json\r\nContent-Length:  ");
+    ltoa(12 /* {"path": ""} */ + strlen((const char *)pFileName), (char *)&ReqDirCmdBuf[strlen((const char *)ReqDirCmdBuf)]);
+    strcat((char *)ReqDirCmdBuf, "\r\n\r\n");
 
-	Report("CdnDropbox_SendReqFileUrl: uri=%s\r\n", OTA_SERVER_REST_REQ_FILE_URL);
-    return HttpClient_SendReq(SockId, pSendBuf, (_u8 *)"POST ", pServerName,
-                              (_u8 *)OTA_SERVER_REST_REQ_FILE_URL , (_u8 *)"" /*pFileName*/,
-							  (_u8 *)OTA_SERVER_REST_HDR, (_u8 *)ReqDirCmdBuf/*pVendorToken*/);
+    /* Data */
+    strcat((char *)ReqDirCmdBuf, "{\"path\": \"");
+    strcat((char *)ReqDirCmdBuf, (const char *)pFileName);
+    strcat((char *)ReqDirCmdBuf, "\"}");
+
+    Report("CdnDropbox_SendReqFileUrl: uri=%s\r\n", OTA_SERVER_REST_REQ_FILE_URL);
+    return HttpClient_SendReq(SockId, pSendBuf, (_u8 *)"POST ", pServerName, (_u8 *)OTA_SERVER_REST_REQ_FILE_URL , "" /*pFileName*/, (_u8 *)OTA_SERVER_REST_HDR, ReqDirCmdBuf/*pVendorToken*/);
 }
 
 
@@ -179,15 +183,15 @@ _i32 OtaClient_UpdateCheck(void *pvOtaClient, _u8 *pVendorStr)
     _u8 *response_buf = http_recv_buf();
 
     pOtaClient->pVendorStr = pVendorStr;
-    Report("OtaClient_UpdateCheck: call http_build_request %s\r\n", pOtaServerInfo->rest_update_chk);
 
 #ifdef OTA_DROPBOX_V2
     len = CdnDropboxV2_SendReqDir (pOtaClient->serverSockId, send_buf, pOtaServerInfo->server_domain, pOtaClient->pVendorStr, pOtaServerInfo->rest_hdr_val);
 #else
+    Report("OtaClient_UpdateCheck: call http_build_request %s\r\n", OTA_SERVER_REST_UPDATE_CHK);
 	#ifdef TI_OTA_SERVER
-    http_build_request (send_buf, (_u8*)"GET ", pOtaServerInfo->server_domain, pOtaServerInfo->rest_update_chk, NULL, NULL, NULL);
+    http_build_request (send_buf, "GET ", pOtaServerInfo->server_domain, OTA_SERVER_REST_UPDATE_CHK, NULL, NULL, NULL);
 	#else
-	http_build_request (send_buf, (_u8*)"GET ", pOtaServerInfo->server_domain, pOtaServerInfo->rest_update_chk , pOtaClient->pVendorStr, pOtaServerInfo->rest_hdr, pOtaServerInfo->rest_hdr_val);
+	http_build_request (send_buf, "GET ", pOtaServerInfo->server_domain, OTA_SERVER_REST_UPDATE_CHK , pOtaClient->pVendorStr, OTA_SERVER_REST_HDR, pOtaServerInfo->rest_hdr_val);
 	#endif
 
     len = sl_Send(pOtaClient->serverSockId, send_buf, (_i16)strlen((const char *)send_buf), 0);
@@ -271,7 +275,6 @@ _i32 OtaClient_ResourceMetadata(void *pvOtaClient, _u8 *resource_file_name, OtaF
 
     memset(pMetadata, 0, sizeof(OtaFileMetadata_t));
     *paramResourceMetadata = pMetadata;
-    Report("OtaClient_ResourceMetadata: call http_build_request %s\r\n", pOtaServerInfo->rest_rsrc_metadata);
     memset(response_buf,0,HTTP_RECV_BUF_LEN);
 
     /* first check and covert file name: faa_sys_filename.ext */
@@ -284,10 +287,11 @@ _i32 OtaClient_ResourceMetadata(void *pvOtaClient, _u8 *resource_file_name, OtaF
 #ifdef OTA_DROPBOX_V2
     len = CdnDropboxV2_SendReqFileUrl(pOtaClient->serverSockId, send_buf, pOtaServerInfo->server_domain, resource_file_name, pOtaServerInfo->rest_hdr_val);
 #else
+    Report("OtaClient_ResourceMetadata: call http_build_request %s\r\n", OTA_SERVER_REST_RSRC_METADATA);
 #ifdef TI_OTA_SERVER
-    http_build_request (send_buf, "GET ",  pOtaServerInfo->server_domain, pOtaServerInfo->rest_rsrc_metadata, NULL,             , pOtaServerInfo->rest_hdr, pOtaServerInfo->rest_hdr_val);
+    http_build_request (send_buf, "GET ",  pOtaServerInfo->server_domain, OTA_SERVER_REST_RSRC_METADATA, NULL,             , OTA_SERVER_REST_HDR, pOtaServerInfo->rest_hdr_val);
 #else
-    http_build_request (send_buf, "POST ", pOtaServerInfo->server_domain, pOtaServerInfo->rest_rsrc_metadata, resource_file_name, pOtaServerInfo->rest_hdr, pOtaServerInfo->rest_hdr_val);
+    http_build_request (send_buf, "POST ", pOtaServerInfo->server_domain, OTA_SERVER_REST_RSRC_METADATA, resource_file_name, OTA_SERVER_REST_HDR, pOtaServerInfo->rest_hdr_val);
 #endif
 
     len = sl_Send(pOtaClient->serverSockId, send_buf, (_i16)strlen((const char *)send_buf), 0);

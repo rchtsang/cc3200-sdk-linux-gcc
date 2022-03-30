@@ -18,6 +18,26 @@
 #include "OtaHttp.h"
 #include "CdnClient.h"
 
+//IAR Dependency
+#ifdef ewarm
+#define BUFLEN 20
+int ltoa(long val, char *buffer)
+{
+
+    char           tempc[BUFLEN];
+    register char *bufptr;
+    register int   neg = val < 0;
+    register long  uval = val;
+
+    *(bufptr = &tempc[BUFLEN - 1]) = 0;
+
+    do {*--bufptr = abs(uval % 10) + '0';}  while(uval /= 10);
+    if (neg) *--bufptr = '-';
+
+    memcpy(buffer,bufptr, uval = (tempc + BUFLEN) - bufptr);
+    return uval - 1;    /* DON'T COUNT NULL TERMINATION */
+}
+#endif
 /* Internals */
 CdnClient_t g_CdnClient;
 
@@ -47,7 +67,7 @@ _i32 CdnClient_ConnectByUrl(void *pvCdnClient, OtaFileMetadata_t *pResourceMetad
 {
     CdnClient_t *pCdnClient = (CdnClient_t *)pvCdnClient;
     _u8 domain_name[64];
-    _u8 req_uri[512];
+    _u8 req_uri[MAX_CDN_URL_LEN];
     _u8 *cdn_url = pResourceMetadata->cdn_url;
     _i32 status;
 
@@ -67,8 +87,11 @@ _i32 CdnClient_ConnectByUrl(void *pvCdnClient, OtaFileMetadata_t *pResourceMetad
         strcpy((char *)pCdnClient->cdn_server_name, (const char *)domain_name);
         /* connect to the CDN server */
         pCdnClient->port_num = SOCKET_PORT_DEFAULT;
-        pCdnClient->fileSockId = http_connect_server(pCdnClient->cdn_server_name, 0, pCdnClient->port_num, secured_connection, SOCKET_BLOCKING);
-        if (pCdnClient->fileSockId < 0)
+        do {
+            pCdnClient->fileSockId = http_connect_server(pCdnClient->cdn_server_name, 0, pCdnClient->port_num, secured_connection, SOCKET_BLOCKING);
+        } while(pCdnClient->fileSockId == SL_ESECT00MANYSSLOPENED); // Retry until previous connection is closed
+
+	if (pCdnClient->fileSockId < 0)
         {
             Report("CdnClient_ConnectByUrl: ERROR on http_connect_server, status=%d\r\n", pCdnClient->fileSockId);
             CdnClient_CloseServer(pvCdnClient);
@@ -116,7 +139,7 @@ _i32 _ReadFileHeaders(_i16 fileSockId, _u8 *domian_name, _u8 *file_name)
     _u8 *send_buf = http_send_buf();
 
     Report("_ReadFileHeaders: domain=%s, file=%s\r\n", domian_name, file_name);
-    http_build_request (send_buf, (_u8*)"GET ", domian_name, NULL, file_name, NULL, NULL);
+    http_build_request (send_buf, "GET ", domian_name, NULL, file_name, NULL, NULL);  
 
     len = sl_Send(fileSockId, send_buf, (_i16)strlen((const char *)send_buf), 0);
     if (len <= 0)
@@ -156,7 +179,7 @@ _i32 _readSignature(CdnClient_t *pCdnClient, _u8 *signature_filename, OtaFileMet
     status = pFlcCb->pOpenFile((_u8 *)signature_filename , 0, NULL, &lFileHandle, _FS_MODE_OPEN_READ);
     if(status < 0)
     {
-        Report("_readSignature: Error pOpenFile\r\n");
+        Report("_readSignature: Error pOpenFile (%s)\r\n", signature_filename);
         return OTA_STATUS_ERROR;
     }
 

@@ -43,10 +43,6 @@
 //                        mode correctness of Data transfer is verified once the 
 //                        transfer is complete. In Ping Pong mode transfer rate 
 //                        is calculated and displayed.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_uDMA_Application
-// or
-// docs\examples\CC32xx_uDMA_Application.pdf
 //
 //*****************************************************************************
 
@@ -82,7 +78,7 @@
 #include "uart_if.h"
 #include "pinmux.h"
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APP_NAME                "uDMA Reference"
 #define UART_BAUD_RATE          115200
 #define SYSCLK                  80000000
@@ -146,7 +142,7 @@ int UARTDone=0;
     extern uVectorEntry __vector_table;
 #endif
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     extern void (* const g_pfnVectors[])(void);
 #endif
 //*****************************************************************************
@@ -498,7 +494,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -663,7 +659,7 @@ InitSGTransfer()
 //! \return none
 //!
 //*****************************************************************************
-int
+void
 main()
 {
     static unsigned long ulPrevSeconds;
@@ -807,8 +803,8 @@ main()
                 "Peripheral \n\r");
     UART_PRINT(" \n\rTransfer Rate is %lu Bytes/Sec \n\r", ulBytesAvg);
     UART_PRINT("\n\rTest Ended\n\r");
+    return ;
 
-	while(1);
 }
 
 

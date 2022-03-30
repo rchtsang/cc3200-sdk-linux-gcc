@@ -41,10 +41,6 @@
 //                        how to connect to a server to download a file and save
 //                        it on the serial flash. This scheme can be used by
 //                        App developer to update any file over the network.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_File_Download_Application
-// or
-// docs\examples\CC32xx_File_Download_Application.pdf
 //
 //*****************************************************************************
 
@@ -72,11 +68,11 @@
 #include <http/client/httpcli.h>
 #include <http/client/common.h>
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APP_NAME                "File Download"
 
-#define PREFIX_BUFFER           "/graphics/folders/partimages/CC3200.jpg"
-#define HOST_NAME               "www.ti.com"
+#define PREFIX_BUFFER           "/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+#define HOST_NAME               "www.google.com"
 #define HOST_PORT               (80)
 
 #define SIZE_40K                40960  /* Serial flash file size 40 KB */
@@ -85,7 +81,7 @@
 #define MAX_BUFF_SIZE           1460
 
 // File on the serial flash to be replaced
-#define FILE_NAME               "cc3200.jpg"
+#define FILE_NAME               "image.jpg"
 
 // Application specific status/error codes
 typedef enum{

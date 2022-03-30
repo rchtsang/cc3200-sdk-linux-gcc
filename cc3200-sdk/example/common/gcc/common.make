@@ -124,32 +124,32 @@ vpath %.c $(SRC_ROOT)
 # *.o build rules
 $(DEBUG_OBJPATH)/%.o: %.c Makefile
 	$(dir_create)
-	@$(CC) $(CFLAGS_COMMON) $(DEBUG_CFLAGS) $(CFLAGS) -c "$<" -o "$@";
+	$(CC) $(CFLAGS_COMMON) $(DEBUG_CFLAGS) $(CFLAGS) -c "$<" -o "$@";
 	@echo "CC	$@";
 
 $(RELEASE_OBJPATH)/%.o: %.c Makefile
 	$(dir_create)
-	@$(CC) $(CFLAGS_COMMON) $(RELEASE_CFLAGS) $(CFLAGS) -c "$<" -o "$@";
+	$(CC) $(CFLAGS_COMMON) $(RELEASE_CFLAGS) $(CFLAGS) -c "$<" -o "$@";
 	@echo "CC	$@";
 
 # *.elf build rules
 $(DEBUG_ELF): $(DEBUG_OBJECTS)
 	$(dir_create)
-	@${LD} -T$(LDSCRIPT) -Map $(@:%.elf=%.map) --entry $(ENTRY_POINT) --gc-sections -o $@ $(DEBUG_OBJECTS) $(DEBUG_LDLIBS) $(STDLIBS)
+	${LD} -T$(LDSCRIPT) -Map $(@:%.elf=%.map) --entry $(ENTRY_POINT) --gc-sections -o $@ $(DEBUG_OBJECTS) $(DEBUG_LDLIBS) $(STDLIBS)
 	@echo "LD	$@";
 
 $(RELEASE_ELF): $(RELEASE_OBJECTS)
 	$(dir_create)
-	@${LD} -T$(LDSCRIPT) -Map $(@:%.elf=%.map) --entry $(ENTRY_POINT) --gc-sections -o $@ $(RELEASE_OBJECTS) $(RELEASE_LDLIBS) $(STDLIBS)
+	${LD} -T$(LDSCRIPT) -Map $(@:%.elf=%.map) --entry $(ENTRY_POINT) --gc-sections -o $@ $(RELEASE_OBJECTS) $(RELEASE_LDLIBS) $(STDLIBS)
 	@echo "LD	$@";
 
 # *.bin build rules
 $(DEBUG_BINARY): $(DEBUG_ELF) 
-	@${OBJCOPY} -O binary $< $@
+	${OBJCOPY} -O binary $< $@
 	@echo "OBJCOPY	$@";
 
 $(RELEASE_BINARY): $(RELEASE_ELF)
-	@${OBJCOPY} -O binary $< $@
+	${OBJCOPY} -O binary $< $@
 	@echo "OBJCOPY	$@";
 
 # Rules for build release & debug libs

@@ -42,10 +42,6 @@
 //                          application connects to an AP and
 //                          tries to establish a secure connection to the
 //                          Google server.
-// Application Details  -
-// docs\examples\CC32xx_SSL_Demo_Application.pdf
-// or
-// http://processors.wiki.ti.com/index.php/CC32xx_SSL_Demo_Application
 //
 //*****************************************************************************
 
@@ -79,20 +75,19 @@
 
 
 #define APPLICATION_NAME        "SSL"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define SERVER_NAME                "www.google.com"
 #define GOOGLE_DST_PORT             443
 
 #define SL_SSL_CA_CERT_FILE_NAME        "/cert/testcacert.der"
 
-#define DATE                4    /* Current Date */
-#define MONTH               3     /* Month 1-12 */
-#define YEAR                2015  /* Current year */
-#define HOUR                12    /* Time - hours */
-#define MINUTE              32    /* Time - minutes */
-#define SECOND              0     /* Time - seconds */
-
+#define DATE                01    	/* Current Date */
+#define MONTH               01     	/* Month 1-12 */
+#define YEAR                2019  	/* Current year */
+#define HOUR                12    	/* Time - hours */
+#define MINUTE              00    	/* Time - minutes */
+#define SECOND              00     	/* Time - seconds */
 
 
 // Application specific status/error codes
@@ -105,22 +100,6 @@ typedef enum{
     STATUS_CODE_MAX = -0xBB8
 }e_AppStatusCodes;
 
-typedef struct
-{
-   /* time */
-   unsigned long tm_sec;
-   unsigned long tm_min;
-   unsigned long tm_hour;
-   /* date */
-   unsigned long tm_day;
-   unsigned long tm_mon;
-   unsigned long tm_year;
-   unsigned long tm_week_day; //not required
-   unsigned long tm_year_day; //not required
-   unsigned long reserved[3];
-}SlDateTime;
-
-
 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
@@ -130,8 +109,7 @@ unsigned long  g_ulPingPacketsRecv = 0; //Number of Ping Packets received
 unsigned long  g_ulGatewayIP = 0; //Network Gateway IP address
 unsigned char  g_ucConnectionSSID[SSID_LEN_MAX+1]; //Connection SSID
 unsigned char  g_ucConnectionBSSID[BSSID_LEN_MAX]; //Connection BSSID
-signed char    *g_Host = (signed char*)SERVER_NAME;
-SlDateTime g_time;
+signed char    *g_Host = SERVER_NAME;
 #if defined(ccs) || defined(gcc)
 extern void (* const g_pfnVectors[])(void);
 #endif
@@ -405,7 +383,7 @@ static long InitializeAppVariables()
 {
     g_ulStatus = 0;
     g_ulGatewayIP = 0;
-    g_Host = (signed char*)SERVER_NAME;
+    g_Host = SERVER_NAME;
     memset(g_ucConnectionSSID,0,sizeof(g_ucConnectionSSID));
     memset(g_ucConnectionBSSID,0,sizeof(g_ucConnectionBSSID));
     return SUCCESS;
@@ -576,7 +554,7 @@ static void BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -613,11 +591,11 @@ static long WlanConnect()
     SlSecParams_t secParams = {0};
     long lRetVal = 0;
 
-    secParams.Key = (signed char*)SECURITY_KEY;
+    secParams.Key = SECURITY_KEY;
     secParams.KeyLen = strlen(SECURITY_KEY);
     secParams.Type = SECURITY_TYPE;
 
-    lRetVal = sl_WlanConnect((signed char*)SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
+    lRetVal = sl_WlanConnect(SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
     ASSERT_ON_ERROR(lRetVal);
 
     // Wait for WLAN Event
@@ -650,17 +628,18 @@ static long WlanConnect()
 static int set_time()
 {
     long retVal;
+    SlDateTime_t dateTime = {0};
 
-    g_time.tm_day = DATE;
-    g_time.tm_mon = MONTH;
-    g_time.tm_year = YEAR;
-    g_time.tm_sec = HOUR;
-    g_time.tm_hour = MINUTE;
-    g_time.tm_min = SECOND;
+    dateTime.sl_tm_day = DATE;
+    dateTime.sl_tm_mon = MONTH;
+    dateTime.sl_tm_year = YEAR;
+    dateTime.sl_tm_hour = HOUR;
+    dateTime.sl_tm_min = MINUTE;
+    dateTime.sl_tm_sec = SECOND;
 
     retVal = sl_DevSet(SL_DEVICE_GENERAL_CONFIGURATION,
-                          SL_DEVICE_GENERAL_CONFIGURATION_DATE_TIME,
-                          sizeof(SlDateTime),(unsigned char *)(&g_time));
+                       SL_DEVICE_GENERAL_CONFIGURATION_DATE_TIME,
+                       sizeof(SlDateTime_t),(_u8 *)(&dateTime));
 
     ASSERT_ON_ERROR(retVal);
     return SUCCESS;
@@ -686,8 +665,8 @@ static long ssl()
 {
     SlSockAddrIn_t    Addr;
     int    iAddrSize;
-    unsigned char    ucMethod = SL_SO_SEC_METHOD_SSLV3;
-    unsigned int uiIP,uiCipher = SL_SEC_MASK_SSL_RSA_WITH_RC4_128_SHA;
+    unsigned char    ucMethod = SL_SO_SEC_METHOD_SSLv3_TLSV1_2;
+    unsigned int uiIP,uiCipher = SL_SEC_MASK_TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA;
     long lRetVal = -1;
     int iSockID;
 
@@ -822,7 +801,7 @@ static long ssl()
     }
 
     lRetVal = sl_SetSockOpt(iSockID, SL_SOL_SOCKET, \
-    						SO_SECURE_DOMAIN_NAME_VERIFICATION, \
+    						SL_SO_SECURE_DOMAIN_NAME_VERIFICATION, \
 							g_Host, strlen((const char *)g_Host));
     if( lRetVal < 0 )
     {
@@ -857,7 +836,7 @@ static long ssl()
 //! \return None
 //!
 //*****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
     //

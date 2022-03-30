@@ -38,10 +38,6 @@
 // Application Name     - Timer Count Capture
 // Application Overview - This application showcases Timer's count capture 
 //                        feature to measure frequency of an external signal.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Timer_Count_Capture_Application
-// or
-// docs\examples\CC32xx_Timer_Count_Capture_Application.pdf
 //
 //*****************************************************************************
 
@@ -63,7 +59,7 @@
 #include "pinmux.h"
 
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APP_NAME        "Timer Count Capture"
 #define TIMER_FREQ      80000000
 
@@ -101,7 +97,9 @@ static void TimerIntHandler()
     //
     g_ulSamples[0] = g_ulSamples[1];
     g_ulSamples[1] = MAP_TimerValueGet(TIMERA2_BASE,TIMER_A);
-    g_ulFreq = (TIMER_FREQ/(g_ulSamples[0] - g_ulSamples[1]));
+	g_ulFreq = ((g_ulSamples[0] > g_ulSamples[1]) ?
+				(TIMER_FREQ / (g_ulSamples[0] - g_ulSamples[1])) :
+				(TIMER_FREQ / (65535 - (g_ulSamples[1] - g_ulSamples[0]))));
 }
 
 

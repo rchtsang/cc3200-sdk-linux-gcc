@@ -42,11 +42,6 @@
 //                          on port 5001 and waits for P2P device to connect and
 //                          send data on it.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_P2P_Application
-// or
-// docs\examples\CC32xx_P2P_Application.pdf
-//
 //*****************************************************************************
 
 
@@ -79,7 +74,7 @@
 #include "gpio_if.h"
 
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define P2P_REMOTE_DEVICE   "remote-p2p-device"
 #define P2P_DEVICE_NAME     "cc3200-p2p-device"
@@ -129,7 +124,7 @@ unsigned long  g_ulGatewayIP = 0;
 const char digits[] = "0123456789";
 char g_p2p_dev[MAXIMAL_SSID_LENGTH + 1];
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -816,7 +811,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)

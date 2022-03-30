@@ -79,7 +79,6 @@ DEBUG_CFLAGS=-O0
 
 # Sources
 SOURCES= CdnClient.c \
-         LogClient.c \
          OtaApp.c \
          OtaClient.c \
          OtaHttp.c \

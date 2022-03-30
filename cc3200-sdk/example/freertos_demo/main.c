@@ -36,17 +36,14 @@
 //*****************************************************************************
 //
 // Application Name     - Free-RTOS Demo
-// Application Overview - The objective of this application is to showcasing the 
-//                        FreeRTOS feature like Multiple task creation, Inter 
-//                        task communication using queues. Two tasks and one 
-//                        queue is created. one of the task sends a constant 
-//                        message into the queue and the other task receives the 
-//                        same from the queue. after receiving every message, it 
-//                        displays that message over UART.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_FreeRTOS_Application
-// or
-// docs\examples\CC32xx_FreeRTOS_Application.pdf
+// Application Overview - The objective of this application is to showcase 
+//					      FreeRTOS features like multiple task creation and 
+//						  inter-task communication using queues. This application 
+//						  creates two tasks and one message queue. Task one sends 
+//						  a constant message into the queue, and task two receives 
+//						  the  message from the queue. After receiving each 
+//						  message, the second task prints the message to a serial 
+//						  terminal over UART.
 //
 //*****************************************************************************
 
@@ -93,7 +90,7 @@
 //*****************************************************************************
 //                      MACRO DEFINITIONS
 //*****************************************************************************
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define UART_PRINT              Report
 #define SPAWN_TASK_PRIORITY     9
 #define OSI_STACK_SIZE          2048
@@ -359,13 +356,13 @@ int main( void )
     //
     // Create the Queue Receive task
     //
-    osi_TaskCreate( vTestTask1, (signed char*)"TASK1",\
+    osi_TaskCreate( vTestTask1, "TASK1",\
     							OSI_STACK_SIZE, NULL, 1, NULL );
 
     //
     // Create the Queue Send task
     //
-    osi_TaskCreate( vTestTask2, (signed char*)"TASK2",\
+    osi_TaskCreate( vTestTask2, "TASK2",\
     							OSI_STACK_SIZE,NULL, 1, NULL );
 
     //

@@ -40,10 +40,6 @@
 //                          interaction between HTTP Client(Browser) and 
 //                          SimpleLink Device.The SimpleLink device runs an 
 //                          HTTP Server and user can interact using web browser.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_HTTP_Server
-// or
-// doc\examples\CC32xx_HTTP_Server.pdf
 //
 //*****************************************************************************
 
@@ -87,7 +83,7 @@
 
 
 #define APPLICATION_NAME        "HTTP Server"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define AP_SSID_LEN_MAX         (33)
 #define ROLE_INVALID            (-5)
 
@@ -128,7 +124,7 @@ int g_iSimplelinkRole = ROLE_INVALID;
 signed int g_uiIpAddress = 0;
 unsigned char g_ucSSID[AP_SSID_LEN_MAX];
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -1121,7 +1117,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -1140,7 +1136,7 @@ BoardInit(void)
 //****************************************************************************
 //                            MAIN FUNCTION
 //****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
   

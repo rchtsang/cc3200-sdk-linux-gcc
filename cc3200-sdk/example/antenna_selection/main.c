@@ -18,10 +18,6 @@
 // Application Overview - CC3200 Antenna Selection is method by which user can
 //                        configure the WLAN RF Antenna on the CC3200 device
 //                        from a Browser
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Antenna_Selection_Application
-// or
-// docs\examples\CC32xx_Antenna_Selection_Application.pdf
 //
 //*****************************************************************************
 
@@ -60,9 +56,10 @@
 #include "uart_if.h"
 #endif
 #include "common.h"
+#include "pinmux.h"
 
 #define APPLICATION_NAME        "Antenna Selection"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define SUCCESS                 0
 
 #define PAD_MODE_MASK        0x0000000F
@@ -104,10 +101,6 @@ typedef enum{
 }e_AppStatusCodes;
 
 volatile unsigned char  g_ulStatus = 0;
-
-#if defined(gcc) || defined(ccs)
-extern void (* const g_pfnVectors[])(void);
-#endif
 
 #if defined(ewarm)
 extern uVectorEntry __vector_table;
@@ -1254,10 +1247,18 @@ void AntennaSelection(void* pTaskParams)
     if(lCountSSID>1)
     {
         SortByRSSI(&g_netEntries[0],(unsigned char)lCountSSID);
+		int g;
+        for(g = 0;g<lCountSSID;g++){
+            UART_PRINT("SSID: %s, strength: %i\n\r",g_netEntries[g].ssid, g_netEntries[g].rssi);
+        }
     }
     if(lCountSSIDAnt2>1)
     {
         SortByRSSI(&g_netEntriesAnt2[0],(unsigned char)lCountSSIDAnt2);
+		int g;
+        for(g = 0;g<lCountSSIDAnt2;g++){
+            UART_PRINT("SSID: %s, strength: %i\n\r",g_netEntriesAnt2[g].ssid, g_netEntriesAnt2[g].rssi);
+        }
     }
 
   while(!g_ucAntSelectDone)
@@ -1405,9 +1406,6 @@ static void
 BoardInit(void)
 {
 
-#if defined(gcc) || defined(ccs)
-    MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
-#endif
 #if defined(ewarm)
     MAP_IntVTableBaseSet((unsigned long)&__vector_table);
 #endif
@@ -1487,15 +1485,16 @@ static void SetAntennaSelectionGPIOs(void)
 //! \return None.
 //
 //****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
 
     //
     // Initialize Board configurations
     //
-    BoardInit();   
-
+    BoardInit();
+	PinMuxConfig();	
+    InitTerm();
     //
     // Confugure GPIOs for Antenna Selection
     //
@@ -1528,7 +1527,7 @@ int main()
     //    
     osi_start();
 
-    LOOP_FOREVER();
+    
 }
 
 //*****************************************************************************

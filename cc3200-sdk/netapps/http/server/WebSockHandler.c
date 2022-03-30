@@ -26,8 +26,8 @@
 #include "HttpDebug.h"
 #include <string.h>
 #include <stdlib.h>
-#include "HttpConfig.h"
-#include "HttpString.h"
+#include "HTTPConfig.h"
+#include "HTTPString.h"
 #include "osi.h"
 #include "WebSockHandler.h"
 
@@ -211,6 +211,12 @@ int WSCore_DataRecv(UINT16 uConnection,struct HttpBlob * pData)
 		}
 
 		int RecvLength = (int)pData->uLength;
+
+		if (RecvLength > PayloadLength)
+		{
+		    HttpDebug("Error: Size of data is larger than specified in packet header\n\r");
+		    return 0;
+		}
 
 		//Now, extract payload data
 		memcpy(GlobRecvBuf,(const char *)(pData->pData),RecvLength);

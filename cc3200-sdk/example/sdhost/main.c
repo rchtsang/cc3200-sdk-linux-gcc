@@ -43,11 +43,6 @@
 //                        The demo includes extracting the card capacity,
 //                        capacity class and SD version information and display
 //                        it on the UART terminal.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_SDHost
-// or
-// docs\examples\CC32xx_SDHost.pdf
-//
 //*****************************************************************************
 
 //*****************************************************************************
@@ -77,7 +72,7 @@
 #include "pinmux.h"
 #include "stdcmd.h"
 
-#define APPLICATION_VERSION  "1.1.1"
+#define APPLICATION_VERSION  "1.4.0"
 #define WRITE_TEST_EN        0
 
 #if WRITE_TEST_EN
@@ -89,7 +84,7 @@
 //*****************************************************************************
 static unsigned char g_ucDataBuff[512];
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -240,7 +235,7 @@ CardCapacityGet(unsigned short ulRCA)
 static unsigned long
 CardInit(CardAttrib_t *CardAttrib)
 {
-    unsigned long ulRet = -1;
+    unsigned long ulRet;
     unsigned long ulResp[4];
 
     //
@@ -586,7 +581,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -617,8 +612,6 @@ int main()
     CardAttrib_t sCard;
     unsigned long ulCapacity;
     unsigned long ulAddress;
-
-    sCard.ullCapacity = 0;
 
     //
     // Initialize Board configurations

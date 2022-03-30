@@ -62,7 +62,7 @@ IPATH+= -I${SDK_ROOT}/inc
 IPATH+= -I${SDK_ROOT}/driverlib
 IPATH+= -I${RTOSDIR}
 IPATH+= -I${RTOSDIR}/include
-IPATH+= -I${RTOSDIR}/portable/GCC/ARM_CM4
+IPATH+= -I${RTOSDIR}/portable/GCC/ARM_CM3
 
 # C Compiler Flags
 CFLAGS_COMMON=-mthumb       \
@@ -89,7 +89,7 @@ SOURCES= osi_freertos.c \
 	timers.c        \
 	heap_3.c
 
-vpath %.c $(SRC_ROOT):$(RTOSDIR):$(RTOSDIR)/portable/GCC/ARM_CM4:$(RTOSDIR)/portable/MemMang
+vpath %.c $(SRC_ROOT):$(RTOSDIR):$(RTOSDIR)/portable/GCC/ARM_CM3:$(RTOSDIR)/portable/MemMang
 
 # Directory creator
 dir_create=@mkdir -p $(@D)

@@ -45,10 +45,6 @@
 //                        the other) are set to toggle two different GPIOs which 
 //                        in turn drives two different LEDs, which will give a 
 //                        blinking effect.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Timer_Demo_Application
-// or
-// docs\examples\CC32xx_Timer_Demo_Application.pdf
 //
 //*****************************************************************************
 
@@ -85,13 +81,13 @@
 //*****************************************************************************
 //                      MACRO DEFINITIONS
 //*****************************************************************************
-#define APPLICATION_VERSION        "1.1.1"
+#define APPLICATION_VERSION        "1.4.0"
 #define FOREVER                    1
 
 //*****************************************************************************
 //                      Global Variables for Vector Table
 //*****************************************************************************
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -169,7 +165,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)

@@ -46,11 +46,8 @@
 //
 //*****************************************************************************
 static char *heap_end = 0;
-static char *heap2_end = 0;
 extern unsigned long _heap;
 extern unsigned long _eheap;
-extern unsigned long _heap2;
-extern unsigned long _eheap2;
 
 //*****************************************************************************
 //
@@ -240,12 +237,6 @@ ResetISR(void)
           "        strlt   r2, [r0], #4\n"
           "        blt     zero_loop");
 
-	//
-	// these addresses resolved by linker script
-	//
-	heap_end = (char *)&_heap;
-	heap2_end = (char *)&_heap2;
-
     //
     // Call the application's entry point.
     //
@@ -333,31 +324,38 @@ IntDefaultHandler(void)
 //*****************************************************************************
 void * _sbrk(unsigned int incr)
 {
-	char * prev_heap_end;
 
-	/* first of all use default heap, if possible,
-	   then use 16k heap bank, where was placed bootloader */
+    char *prev_heap_end;
 
-	/* allocate chunk from default heap region */
-	prev_heap_end = heap_end;
+    //
+    // Check if this function is calld for the
+    // first time and the heap end pointer
+    //
+    if (heap_end == 0)
+    {
+        heap_end = (char *)&_heap; 
+    }
 
-	if (heap_end + incr > (char *)&_eheap) {
+    //
+    // Check if we have enough heap memory available
+    //
+    prev_heap_end = heap_end;
+    if (heap_end + incr > (char *)&_eheap)
+    {
+    //
+    // Return error
+    //
+        return 0;
+    }
 
-		/* allocate chunk from 16K region */
-		prev_heap_end = heap2_end;
+    //
+    // Set the new heap end pointer
+    //
+    heap_end += incr;
+    
+    //
+    // Return the pointer to the newly allocated memory
+    //
+    return prev_heap_end;
 
-		if (heap2_end + incr > (char *)&_eheap2) {
-			return (void *)-1;
-		}
-
-		heap2_end += incr;
-		/* full newlib malloc doesn't recognize
-		 * returned address as valid - probably it
-		 * expects one-bank memory model.
-		 */
-		return prev_heap_end;
-	}
-
-	heap_end += incr;
-	return prev_heap_end;
 }

@@ -41,10 +41,6 @@
 //                        programmable output inversion of the PWM signal.
 //                        The brightness of the LEDs are varied from Off to On 
 //                        as PWM output varies.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_PWM
-// or
-// docs\examples\CC32xx_PWM.pdf
 //
 //*****************************************************************************
 
@@ -72,7 +68,7 @@
 
 #include "pinmux.h"
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define DBG_PRINT               Report
 //
 // The PWM works based on the following settings:
@@ -97,7 +93,7 @@
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
 //*****************************************************************************
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -260,7 +256,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -291,7 +287,7 @@ BoardInit(void)
 //! \return None.
 //
 //****************************************************************************
-int main()
+void main()
 {
     int iLoopCnt;
 

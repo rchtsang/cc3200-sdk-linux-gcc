@@ -39,10 +39,6 @@
 // Application Overview - The demo application focuses on showing the required 
 //                        initialization sequence to enable the CC3200 SPI 
 //                        module in full duplex 4-wire master and slave mode(s).
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_SPI_Demo
-// or
-// docs\examples\CC32xx_SPI_Demo.pdf
 //
 //*****************************************************************************
 
@@ -75,7 +71,7 @@
 #include "pinmux.h"
 
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 //*****************************************************************************
 //
 // Application Master/Slave mode selector macro
@@ -100,7 +96,7 @@ static unsigned char g_ucRxBuff[TR_BUFF_SIZE];
 static unsigned char ucTxBuffNdx;
 static unsigned char ucRxBuffNdx;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -349,7 +345,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -374,7 +370,7 @@ BoardInit(void)
 //! \return None.
 //
 //*****************************************************************************
-int main()
+void main()
 {
     //
     // Initialize Board configurations

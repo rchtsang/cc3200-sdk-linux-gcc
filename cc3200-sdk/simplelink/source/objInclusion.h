@@ -300,8 +300,9 @@ extern "C" {
 
 #define _SL_INC_sl_Stop                 __dev
 
+#ifndef WIN32
 #define _SL_INC_sl_Stop_WithNwpLpdsPoll __dev
-
+#endif
 #define _SL_INC_sl_StatusGet            __dev
 
 #ifdef SL_IF_TYPE_UART  

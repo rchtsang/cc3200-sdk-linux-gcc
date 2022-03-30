@@ -44,10 +44,6 @@
 //                        application is to introduce the user to the easily 
 //                        configurable power management framework. This
 //                        example is for non os environment.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Idle_Profile_NonOS_Application
-// or
-// docs\examples\CC32xx_Idle_Profile_NonOS_Application.pdf
 //
 //*****************************************************************************
 
@@ -88,7 +84,7 @@
 #include "pinmux.h"
 #include "common.h"
 
-#define APPLICATION_VERSION "1.1.1"
+#define APPLICATION_VERSION "1.4.0"
 
 //
 // Values for below macros shall be modified as per access-point(AP) properties

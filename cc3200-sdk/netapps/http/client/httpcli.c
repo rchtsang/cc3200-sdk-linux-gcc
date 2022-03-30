@@ -31,6 +31,7 @@
  */
 #include <http/client/httpcli.h>
 #include <http/client/common.h>
+#include <strings.h>
 
 #if defined(__OSI__)/* __linux__ */
 #include <osi.h>
@@ -385,11 +386,11 @@ static int checkContentField(HTTPCli_Handle cli, char *fname, char *fvalue,
 {
     const char chunk[] = "chunked";
 
-    if ((strcmp(fname, HTTPCli_FIELD_NAME_TRANSFER_ENCODING) == 0)
-            && (strcmp(chunk, fvalue) == 0)) {
+    if ((strcasecmp(fname, HTTPCli_FIELD_NAME_TRANSFER_ENCODING) == 0)
+            && (strcasecmp(chunk, fvalue) == 0)) {
         setCliState(cli, CHUNKED_FLAG, true);
     }
-    else if (strcmp(fname, HTTPCli_FIELD_NAME_CONTENT_LENGTH) == 0) {
+    else if (strcasecmp(fname, HTTPCli_FIELD_NAME_CONTENT_LENGTH) == 0) {
         if (moreFlag) {
             return (HTTPCli_ECONTENTLENLARGE);
         }
@@ -1166,7 +1167,7 @@ int HTTPCli_initSockAddr(struct sockaddr *addr, const char *uri, int flags)
 int HTTPCli_connect(HTTPCli_Struct *cli, const struct sockaddr *addr,
         int flags, const HTTPCli_Params *params)
 {
-    int skt = 0;
+    int skt;
     int ret;
     int slen;
     int sopt = 0;

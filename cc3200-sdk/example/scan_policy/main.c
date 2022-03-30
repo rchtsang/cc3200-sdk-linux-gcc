@@ -41,10 +41,6 @@
 //                            set the scan policy for the CC3200 device. CC3200
 //                            device allows you to set scan policy and enables the
 //                            scan.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_WLAN_Scan_Policies_Application
-// or
-// doc\examples\CC32xx_WLAN_Scan_Policies_Application.pdf
 //
 //*****************************************************************************
 
@@ -80,7 +76,7 @@
 #include "pinmux.h"
 
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define WLAN_SCAN_COUNT         20
 
 // Application specific status/error codes
@@ -103,7 +99,7 @@ unsigned char  g_ucConnectionSSID[SSID_LEN_MAX+1]; //Connection SSID
 unsigned char  g_ucConnectionBSSID[BSSID_LEN_MAX]; //Connection BSSID
 Sl_WlanNetworkEntry_t netEntries[20]; // Wlan Network Entry
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -554,6 +550,11 @@ static long WlanScan(void *pvParameters)
     long lRetVal = -1;
 
     unsigned short ucIndex;
+
+    int i;
+
+
+
     unsigned char ucpolicyOpt;
     union
     {
@@ -659,6 +660,22 @@ static long WlanScan(void *pvParameters)
     //
     // get scan results - 4 transactions of 5 entries 
     //
+
+    ucIndex = lRetVal;
+
+#ifndef NOTERM
+    for (i = 0; i < ucIndex; i++)
+    {
+        UART_PRINT(
+                "[%2d] %-32s (%2d) : %d : %02x:%02x:%02x:%02x:%02x:%02x : %d\n\r",
+                i, netEntries[i].ssid, netEntries[i].ssid_len,
+                netEntries[i].sec_type, netEntries[i].bssid[0],
+                netEntries[i].bssid[1], netEntries[i].bssid[2],
+                netEntries[i].bssid[3], netEntries[i].bssid[4],
+                netEntries[i].bssid[5], netEntries[i].rssi);
+    }
+#endif
+
     ucIndex = 0;
     memset(netEntries, 0, sizeof(netEntries));
 
@@ -705,7 +722,7 @@ static void BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -730,7 +747,7 @@ static void BoardInit(void)
 //! \return None
 //!
 //*****************************************************************************
-int
+void
 main()
 {
     long lRetVal = -1;
@@ -740,6 +757,11 @@ main()
     //
     BoardInit();
     PinMuxConfig();
+
+#ifndef NOTERM
+    InitTerm();
+#endif
+
     lRetVal = WlanScan(NULL);
     if(lRetVal < 0)
     {

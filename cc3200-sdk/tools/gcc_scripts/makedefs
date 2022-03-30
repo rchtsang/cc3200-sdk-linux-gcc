@@ -136,7 +136,6 @@ LD=${PREFIX}-ld
 #
 LDFLAGS=--gc-sections
 
-
 #
 # Get the location of libgcc.a from the GCC front-end.
 #

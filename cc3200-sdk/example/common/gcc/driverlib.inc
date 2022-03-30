@@ -36,3 +36,5 @@ IPATH += -I$(DRIVERLIB_PATH)
 
 DEBUG_LDLIBS+='$(DRIVERLIB_PATH)/gcc/lib/Debug/libdriver.a'
 RELEASE_LDLIBS+='$(DRIVERLIB_PATH)/gcc/lib/Release/libdriver.a'
+# DEBUG_LDLIBS+='$(DRIVERLIB_PATH)/gcc/exe/libdriver.a'
+# RELEASE_LDLIBS+='$(DRIVERLIB_PATH)/gcc/exe/libdriver.a'

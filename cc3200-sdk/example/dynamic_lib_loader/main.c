@@ -39,10 +39,6 @@
 // Application Overview - This particular application illustrates how to load
 //						  different libraries having same Interface APIs can be
 //						  hooked at the run time
-// Application Details  -
-//http://processors.wiki.ti.com/index.php/CC32xx_Dynamic_Library_Loader
-//or
-//\docs\examples\CC32xx Dynamic Library Loader.pdf
 //
 //*****************************************************************************
 
@@ -72,7 +68,7 @@
 #include "pinmux.h"
 #include "app.h"
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APPLICATION_NAME        "Dynamic Lib Loader"
 
 #define LIBRARY_1           "/tmp/app1.bin"

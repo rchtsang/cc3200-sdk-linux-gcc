@@ -19,10 +19,6 @@
 //                          with Extensible Messaging and Presence Protocol(XMPP)
 //                          server using CC32xx. This code doesn't implement a
 //                          full XMPP SW stack\library.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_XMPP_Reference_Application
-// or
-// docs\examples\CC32xx_XMPP_Reference_Application.pdf
 //
 //*****************************************************************************
 
@@ -56,11 +52,10 @@
 //                          LOCAL DEFINES                                   
 //****************************************************************************
 #define APPLICATION_NAME        "WLAN STATION"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 // IP addressed of XMPP server.
-// Should be in long format, E.g: 0xadc2467d == 64.233.167.125
-#define XMPP_IP_ADDR        0x40e9a77d
+#define XMPP_IP_ADDR        SL_IPV4_VAL(74,125,198,125)
 #define XMPP_DST_PORT       5223
 #define BUF_SIZE            1400
 #define REMOTE_USERID_LEN   128
@@ -96,7 +91,7 @@ unsigned char  g_ucConnectionSSID[SSID_LEN_MAX+1]; //Connection SSID
 unsigned char  g_ucConnectionBSSID[BSSID_LEN_MAX]; //Connection BSSID
 unsigned int g_IpObtained = 0;
 
-#if defined(ccs) || defined(gcc)
+#if defined(gcc)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -613,11 +608,11 @@ long WlanConnect()
    long lRetVal = -1;
    SlSecParams_t secParams;
 
-   secParams.Key = (signed char*)SECURITY_KEY;
+   secParams.Key = SECURITY_KEY;
    secParams.KeyLen = strlen(SECURITY_KEY);
    secParams.Type = SECURITY_TYPE;
 
-   lRetVal = sl_WlanConnect((signed char*)SSID_NAME,strlen(SSID_NAME),0,&secParams,0);
+   lRetVal = sl_WlanConnect(SSID_NAME,strlen(SSID_NAME),0,&secParams,0);
    ASSERT_ON_ERROR(lRetVal);
    
    while((!IS_CONNECTED(g_ulStatus)) || (!IS_IP_ACQUIRED(g_ulStatus)))
@@ -711,13 +706,13 @@ static void XmppClient(void *pvParameters)
     // Configuring different parameters which are required for XMPP connection
     XmppOption.Port = XMPP_DST_PORT;
     XmppOption.Family = SL_AF_INET;
-    XmppOption.SecurityMethod = SO_SECMETHOD_SSLV3;
-    XmppOption.SecurityCypher = SECURE_MASK_SSL_RSA_WITH_RC4_128_SHA;
+    XmppOption.SecurityMethod = SL_SO_SEC_METHOD_TLSV1_2;
+    XmppOption.SecurityCypher = SL_SEC_MASK_TLS_RSA_WITH_AES_256_CBC_SHA;
     XmppOption.Ip = XMPP_IP_ADDR;
 
     //DNS query to get IP address of XMPP Server
-//    lRetVal = sl_NetAppDnsGetHostByName(XMPP_DOMAIN_NAME,
-//                                    strlen((const char *)XMPP_DOMAIN_NAME),
+//    lRetVal = sl_NetAppDnsGetHostByName(XMPP_DOMAIN_NAME, \
+//                                    strlen((const char *)XMPP_DOMAIN_NAME), \
 //                                    (unsigned long*)&XmppOption.Ip, SL_AF_INET);
 //
 //    if(lRetVal < 0)
@@ -727,7 +722,7 @@ static void XmppClient(void *pvParameters)
 //        LOOP_FOREVER();
 //    }
 
-    lRetVal = sl_NetAppXmppSet(SL_NET_APP_XMPP_ID, NETAPP_XMPP_ADVANCED_OPT,
+    lRetVal = sl_NetAppXmppSet(SL_NET_APP_XMPP_ID, NETAPP_XMPP_ADVANCED_OPT, \
                     sizeof(SlNetAppXmppOpt_t), (unsigned char *)&XmppOption);
 
     if(lRetVal < 0)
@@ -828,7 +823,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(gcc)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)

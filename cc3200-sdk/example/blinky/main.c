@@ -41,10 +41,6 @@
 //                        connected to the GPIOs on the LP are used to indicate 
 //                        the GPIO output. The GPIOs are driven high-low 
 //                        periodically in order to turn on-off the LEDs.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Blinky_Application
-// or
-// docs\examples\CC32xx_Blinky_Application.pdf
 //
 //*****************************************************************************
 
@@ -77,12 +73,12 @@
 
 #include "pinmux.h"
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
 //*****************************************************************************
-#if defined(gcc) || defined(ccs)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -162,7 +158,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(gcc) || defined(ccs)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)

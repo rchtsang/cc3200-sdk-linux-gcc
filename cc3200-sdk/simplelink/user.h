@@ -47,9 +47,9 @@ extern "C" {
 #include <string.h>  
 #include "cc_pal.h"
 
-/* static installation of the provisioning extarnal library*/
+/* static installation of the provisioning external library*/
 #include "provisioning_api.h"
-//#define SL_EXT_LIB_1							  sl_Provisioning
+#define SL_EXT_LIB_1							  sl_Provisioning
 
 #define SL_TIMESTAMP_TICKS_IN_10_MILLISECONDS     (_u32)(10000000)
 #define SL_TIMESTAMP_MAX_VALUE                    0xFFFFFFFF /* 32-bit timer counter */

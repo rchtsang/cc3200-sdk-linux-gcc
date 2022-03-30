@@ -41,10 +41,6 @@
 //                          mDNS services by CC3200 device. This application can
 //                          be used as a mDNS client(listen) or mDNS Server
 //                          (Advertise).
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_mDNS
-// or
-// doc\examples\CC32xx_mDNS.pdf
 //
 //*****************************************************************************
 
@@ -85,7 +81,7 @@
 #define APPLICATION_NAME        "mDNS Listen"
 #endif
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define SERVICE_NAME            "CC3200._uart._tcp.local"
 
 // Application specific status/error codes
@@ -530,11 +526,11 @@ static long WlanConnect()
     SlSecParams_t secParams = {0};
     long lRetVal = 0;
 
-    secParams.Key = (signed char*)SECURITY_KEY;
+    secParams.Key = SECURITY_KEY;
     secParams.KeyLen = strlen(SECURITY_KEY);
     secParams.Type = SECURITY_TYPE;
 
-    lRetVal = sl_WlanConnect((signed char*)SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
+    lRetVal = sl_WlanConnect(SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
     ASSERT_ON_ERROR(lRetVal);
 
     // Wait for WLAN Event
@@ -563,7 +559,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -679,10 +675,10 @@ static long mDNS_Task()
       while(iretvalmDNS)
       {
         ulTextLen = 200;
-        iretvalmDNS = sl_NetAppDnsGetHostByService((signed char*)SERVICE_NAME,
-                          (unsigned char)strlen(SERVICE_NAME),SL_AF_INET,
-                          (unsigned long *)&pAddr,
-                          &usPort,&ulTextLen,(signed char*)&cText[0]);
+        iretvalmDNS = sl_NetAppDnsGetHostByService(SERVICE_NAME,(unsigned char)\
+                          strlen(SERVICE_NAME),SL_AF_INET,\
+                          (unsigned long *)&pAddr,\
+                          &usPort,&ulTextLen,&cText[0]);
       }
       if(iretvalmDNS == 0)
       {

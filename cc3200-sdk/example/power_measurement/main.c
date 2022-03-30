@@ -43,11 +43,6 @@
 //						  introduce the user to the easily configurable power management
 //						  framework. This example is for non os environment.
 //
-// Application Details  -
-// TBD
-// or
-// TBD
-//
 //*****************************************************************************
 
 //****************************************************************************
@@ -91,7 +86,7 @@
 
 
 /*	constant defines  */
-#define APPLICATION_VERSION 			"1.1.1"
+#define APPLICATION_VERSION 			"1.4.0"
 #define FOREVER                 		1
 #define WK_LPDS 						0   /* Wake from LPDS */
 #define WK_HIB							1   /* Wake from Hibernate */

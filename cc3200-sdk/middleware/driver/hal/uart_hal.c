@@ -144,7 +144,7 @@ static i32 free_uart_state(struct cc_uart_state *uart_state_hndl)
 void cc_uart_isr(cc_hndl uart_hndl)
 {
         uint32_t uiIntStat;
-        int8_t temp = -1;
+        int8_t temp;
         u32 disable = 0;
         struct cc_uart_state *uart_state = (struct cc_uart_state *)uart_hndl;
         struct cc_uart_config *uart_config = (struct cc_uart_config *)&(uart_state->uart_config);
@@ -230,6 +230,7 @@ invoke_wr_callback:
 						(void *)&(uart_state->wrt_done),
 						NULL);
 		}
+		return;
 invoke_rd_callback:
 		if((uart_config->module_info).int_callback) {
 					(uart_config->module_info).int_callback(
@@ -237,6 +238,7 @@ invoke_rd_callback:
 						(void *)&(uart_state->rd_done),
 						NULL);
 		}
+		return;
 }
 
 /* Initialize the UART module */

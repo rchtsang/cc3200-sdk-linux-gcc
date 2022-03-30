@@ -40,10 +40,6 @@
 // Application Overview - This particular application illustrates how this
 //                        device can be used as a client or server for UDP
 //                        communication.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_UDP_Socket_Application
-// or
-// docs\examples\CC32xx_UDP_Socket_Application.pdf
 //
 //*****************************************************************************
 
@@ -84,7 +80,7 @@
 
 
 #define APPLICATION_NAME        "UDP Socket"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define IP_ADDR            0xc0a80064 /* 192.168.0.100 */
 #define PORT_NUM           5001
@@ -1046,7 +1042,7 @@ BoardInit(void)
 //****************************************************************************
 //                            MAIN FUNCTION
 //****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
 

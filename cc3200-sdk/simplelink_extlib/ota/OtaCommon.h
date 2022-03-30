@@ -22,6 +22,21 @@ extern "C" {
 /* #define TI_OTA_SERVER */
 #define OTA_DROPBOX_V2
 
+
+
+#define OTA_SERVER_REST_HDR             "Authorization: Bearer "
+#ifdef OTA_DROPBOX_V2
+/* Dropbox V2 requests */
+#define OTA_SERVER_REST_REQ_DIR         "/2/files/list_folder"            /* returns files/folder list */
+#define OTA_SERVER_REST_REQ_FILE_URL    "/2/files/get_temporary_link"     /* returns A url that serves the media directly */
+#define OTA_SERVER_REST_FILES_PUT       "/1/files_put/auto/"
+#else // DROPBOX V1 or TI_OTA_SERVER
+#define OTA_SERVER_REST_UPDATE_CHK      "/1/metadata/auto/" // returns files/folder list
+#define OTA_SERVER_REST_RSRC_METADATA   "/1/media/auto"     // returns A url that serves the media directly
+#define OTA_SERVER_REST_FILES_PUT       "/1/files_put/auto/"
+#endif
+
+
 /* General return values */
 #define OTA_STATUS_OK        0
 #define OTA_STATUS_ERROR    -1

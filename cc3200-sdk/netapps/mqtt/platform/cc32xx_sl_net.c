@@ -147,7 +147,7 @@ static _i32 create_socket(_u32 nwconn_opts,
 #if ((SL_MAJOR_VERSION_NUM >= 2) || ((SL_MAJOR_VERSION_NUM == 1) && (SL_VERSION_NUM >= 1)))
 /* If Gen2 or SDK 1.20 (Host Driver 1.0.1.x) */
         if (NULL != nw_security_opts->remote_dn_str) {
-    		Status = sl_SetSockOpt(MqttSocketFd, SL_SOL_SOCKET, SO_SECURE_DOMAIN_NAME_VERIFICATION,
+    		Status = sl_SetSockOpt(MqttSocketFd, SL_SOL_SOCKET, SL_SO_SECURE_DOMAIN_NAME_VERIFICATION,
                                        nw_security_opts->remote_dn_str,
                                        strlen(nw_security_opts->remote_dn_str));
 			if (Status < 0) {
@@ -193,12 +193,10 @@ static _i32 create_socket(_u32 nwconn_opts,
 
 static _u32 svr_addr_NB_order_IPV4(char *svr_addr_str)
 {
-    union {
-        _u8 bytes[4];
-        _u32 svr_addr;
-    }addr;
+    _u8 addr[4];
     _i8 i = 0;
     char *token;
+    _u32 svr_addr;
     _i32 temp;
 
     /*take a temporary copy of the string. strtok modifies the input string*/
@@ -223,18 +221,21 @@ static _u32 svr_addr_NB_order_IPV4(char *svr_addr_str)
             return (0);
         }
 
-        addr.bytes[i++] = (_u8) temp;
+        addr[i++] = (_u8) temp;
         token = strtok(NULL, ".");
     }
 
     // check if exactly 4 valid tokens are available or not
     if (i != 4) {
-        addr.svr_addr = 0;
+        MQTT_FREE(svr_addr_cpy);
+        return (0);
     }
 
+    //form address if above test passed
+    svr_addr = *((_u32 *) &addr);
     MQTT_FREE(svr_addr_cpy);
 
-    return (addr.svr_addr);
+    return (svr_addr);
 
 } // end of function
 

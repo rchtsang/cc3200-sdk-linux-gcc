@@ -40,10 +40,6 @@
 //                        diagnostic tool. The demo application is a generic 
 //                        implementation that allows the user to communicate 
 //                        with any I2C device over the lines. 
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_I2C_Application
-// or
-// docs\examples\CC32xx_I2C_Application.pdf
 //
 //*****************************************************************************
 
@@ -81,7 +77,7 @@
 //*****************************************************************************
 //                      MACRO DEFINITIONS
 //*****************************************************************************
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APP_NAME                "I2C Demo"
 #define UART_PRINT              Report
 #define FOREVER                 1
@@ -96,7 +92,7 @@
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
 //*****************************************************************************
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -555,7 +551,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -580,7 +576,7 @@ BoardInit(void)
 //! \return None
 //! 
 //*****************************************************************************
-int main()
+void main()
 {
     int iRetVal;
     char acCmdStore[512];

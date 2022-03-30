@@ -154,7 +154,7 @@ ssize_t Ssock_recv(Ssock_Handle ssock, void * buf, size_t len, int flags)
  */
 ssize_t Ssock_recvall(Ssock_Handle ssock, void * buf, size_t len, int flags)
 {
-    ssize_t nbytes = 0;
+    ssize_t nbytes;
 
     while (len > 0) {
         nbytes = Ssock_recv(ssock, buf, len, flags);

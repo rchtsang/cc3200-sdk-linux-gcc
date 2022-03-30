@@ -41,10 +41,6 @@
 //                          can be performed by the applications. The 
 //                          application use the serial-flash as the storage 
 //                          medium.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_File_Operations
-// or
-// docs\examples\CC32xx_File_Operations.pdf
 //
 //*****************************************************************************
 
@@ -79,7 +75,7 @@
 
 
 #define APPLICATION_NAME        "FILE OPERATIONS"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define SL_MAX_FILE_SIZE        64L*1024L       /* 64KB file */
 #define BUF_SIZE                2048
@@ -163,7 +159,7 @@ Everywhere a cluck-cluck. \
 Old MacDonald had a farm, \
 E-I-E-I-O.";
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -275,7 +271,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -461,7 +457,7 @@ long ReadFileFromDevice(unsigned long ulToken, long lFileHandle)
 //!         Red LED is turned solid in case of failure
 //
 //*****************************************************************************
-int main()
+void main()
 {
     long lRetVal;
     unsigned char policyVal;
@@ -485,7 +481,10 @@ int main()
 
     GPIO_IF_LedOff(MCU_RED_LED_GPIO);
     GPIO_IF_LedOff(MCU_GREEN_LED_GPIO);
-
+	
+#ifndef NOTERM
+	InitTerm();
+#endif
 
     //
     // Initializing the CC3200 networking layers

@@ -42,11 +42,6 @@
 //                          on the channel requested or collects Rx statistics
 //                          on the channel.
 //
-// Application Details  -
-// docs\examples\CC32xx_Transceiver_Mode.pdf
-// or
-// http://processors.wiki.ti.com/index.php/CC32xx_Transceiver_Mode
-//
 //*****************************************************************************
 
 
@@ -86,7 +81,7 @@
 
 
 #define APPLICATION_NAME        "TRANSCEIVER_MODE"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define PREAMBLE            1        /* Preamble value 0- short, 1- long */
 #define CPU_CYCLES_1MSEC (80*1000)
@@ -157,7 +152,7 @@ char RawData_Ping[] = {
        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
        0x00, 0x00, 0x00, 0x00};
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -582,7 +577,7 @@ static void BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)

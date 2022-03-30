@@ -39,12 +39,7 @@
 // Application Overview - The application is a reference to usage of AES 
 //                        DriverLib functions on CC3200. Developers can refer to 
 //                        this simple application and re-use the functions in 
-//                        their applications. This application can be used with 
-//                        or without "Uart Terminal".
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_AES_Demo_Application
-// or
-// docs\examples\CC32xx_AES_Demo_Application.pdf
+//                        their applications.
 //
 //*****************************************************************************
 
@@ -83,10 +78,10 @@
 #include "pinmux.h"
 
 //
-// Undefine UserInput for taking default values from DESVector.h
+// Undefine USER_INPUT to use default values
 //
 #define USER_INPUT
-#define APPLICATION_VERSION   "1.1.1"
+#define APPLICATION_VERSION   "1.4.0"
 #define UART_PRINT            Report
 #define FOREVER               1
 #define APP_NAME              "AES Reference"
@@ -148,7 +143,7 @@ static volatile bool g_bDataInIntFlag;
 static volatile bool g_bContextOutIntFlag;
 static volatile bool g_bDataOutIntFlag;
 
-#if defined(gcc) || defined(ccs)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -418,7 +413,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(gcc) || defined(ccs)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -445,7 +440,7 @@ BoardInit(void)
 //! \return none
 //!
 //*****************************************************************************
-int
+void 
 main()
 {
     unsigned int uiConfig,uiKeySize,*puiKey1,*puiData,*puiResult=NULL,
@@ -582,7 +577,6 @@ main()
         while(FOREVER);
     #endif
 
-    return 0;
 }
 //*****************************************************************************
 //

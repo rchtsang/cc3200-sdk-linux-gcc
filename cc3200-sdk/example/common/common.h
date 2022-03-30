@@ -69,7 +69,6 @@ extern "C"
 #define DBG_PRINT(x,...)
 #define ERR_PRINT(x)
 #else
-#include "uart_if.h"
 #define UART_PRINT Report
 #define DBG_PRINT  Report
 #define ERR_PRINT(x) Report("Error [%d] at line [%d] in function [%s]  \n\r",x,__LINE__,__FUNCTION__)
@@ -93,7 +92,7 @@ extern "C"
 
 #define SPAWN_TASK_PRIORITY     9
 #define SL_STOP_TIMEOUT         200
-#define UNUSED(x)               (void)(x)
+#define UNUSED(x)               ((x) = (x))
 #define SUCCESS                 0
 #define FAILURE                 -1
 
@@ -164,4 +163,3 @@ typedef enum{
 }
 #endif
 #endif //__COMMON__H__
-

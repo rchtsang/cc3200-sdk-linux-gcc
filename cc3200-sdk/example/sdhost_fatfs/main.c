@@ -39,10 +39,6 @@
 // Application Overview - This application uses the FatFS to provide the block
 //                        level read/write access to SD card, using the SD Host
 //                        controller on CC3200.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_SDHost_FatFS
-// or
-// docs\examples\CC32xx_SDHost_FatFS.pdf
 //
 //*****************************************************************************
 
@@ -64,7 +60,7 @@
 #include "uart_if.h"
 #include "pinmux.h"
 
-#define APPLICATION_VERSION  "1.1.1"
+#define APPLICATION_VERSION  "1.4.0"
 #define USERFILE        "userfile.txt"
 #define SYSFILE         "sysfile.txt"
 #define SYSTEXT         "The quick brown fox jumps over the lazy dog"
@@ -74,7 +70,7 @@
 //*****************************************************************************
 unsigned char pBuffer[100];
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -139,7 +135,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -165,7 +161,7 @@ BoardInit(void)
 //! \return None.
 //
 //****************************************************************************
-int main()
+void main()
 {
 
     FIL fp;

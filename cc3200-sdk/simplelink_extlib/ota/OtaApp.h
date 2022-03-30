@@ -33,33 +33,11 @@ typedef enum
 
 typedef struct
 {
-    _u8 vendorStr[20];
-    _i32 startCount;
-    _i32 continuousAccessErrorCount;
-
-    _i32 ota_connect_done;
-    _i32 ota_connect_error;
-    _i32 ota_error_updatecheck;
-    _i32 ota_error_metadata;
-
-    _i32 cdn_connect_error;
-    _i32 cdn_connect_done;
-    _i32 download_error;
-    _i32 download_error_connect_cdn;
-    _i32 download_error_read_hdrs;
-    _i32 download_error_save_chunk;
-    _i32 download_error_max_eagain;
-    _i32 download_done;
-} OtaApp_statistics_t;
-
-typedef struct
-{
     OtaState_e state;
     _i32 runMode;
-    _u8 vendorStr[20];
+    _u8 vendorStr[30];
     OtaOptServerInfo_t *pOtaServerInfo;
     OtaFileMetadata_t  *pResourceMetadata;
-    OtaApp_statistics_t  *pStatistics;
     _i32 resetNwp;
     _i32 resetMcu;
     _u8 isMCUAppUpdate;

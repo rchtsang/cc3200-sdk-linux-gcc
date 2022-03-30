@@ -1212,9 +1212,10 @@ Network_IF_UnsetMCUMachineState(char cStat)
     CLR_STATUS_BIT(g_ulStatus, cStat);
 }
 
+
 //*****************************************************************************
 //
-//! itoa_incompat
+//! itoa
 //!
 //!    @brief  Convert integer to ASCII in decimal base
 //!
@@ -1226,7 +1227,7 @@ Network_IF_UnsetMCUMachineState(char cStat)
 //!
 //
 //*****************************************************************************
-unsigned short itoa_incompat(short cNum, char *cString)
+unsigned short itoa(short cNum, char *cString)
 {
     char* ptr;
     short uTemp = cNum;

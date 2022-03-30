@@ -273,20 +273,20 @@ long sl_NetAppEmailGet(unsigned char AppId, unsigned char Option,
 
         case NETAPP_SOURCE_EMAIL:
 			/* Get source email address */
-			memcpy(pOptionValue, g_sEmail.Username, g_sEmail.Length);
-			*pOptionLen = g_sEmail.Length;
+			pOptionValue = g_sEmail.Username; 
+			pOptionLen = (unsigned char*)g_sEmail.Length;
         break;
 
         case NETAPP_PASSWORD:
 			/* Get source email password */
-			memcpy(pOptionValue, g_sSourcePass.Password, g_sSourcePass.Length);
-			*pOptionLen = g_sSourcePass.Length;
+			pOptionValue = g_sSourcePass.Password;
+			pOptionLen = (unsigned char*)g_sSourcePass.Length;
         break;
 
         case NETAPP_DEST_EMAIL:
 			/* Get destination email address */
-			memcpy(pOptionValue, g_sDestination.Email, g_sDestination.Length);
-			*pOptionLen = g_sDestination.Length;
+			pOptionValue = g_sDestination.Email;
+			pOptionLen = (unsigned char*)g_sDestination.Length;
         break;
 
         default:

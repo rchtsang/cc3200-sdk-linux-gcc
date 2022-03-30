@@ -44,10 +44,6 @@
 //                        buffer using uDMA Rx channel. After receving 8 
 //                        characters in the local buffer, the caharacters are 
 //                        send back to the terminal via UART using uDMA Tx channel.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_UART_DMA_Application
-// or
-// docs\examples\CC32xx_UART_DMA_Application.pdf
 //
 //*****************************************************************************
 
@@ -81,7 +77,7 @@
 //*****************************************************************************
 //                          MACROS
 //*****************************************************************************
-#define APPLICATION_VERSION  "1.1.1"
+#define APPLICATION_VERSION  "1.4.0"
 #define APP_NAME            "UART DMA"
 
 //*****************************************************************************
@@ -89,7 +85,7 @@
 //*****************************************************************************
 volatile int g_iCounter = 0;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -142,7 +138,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -210,7 +206,7 @@ static void UARTIntHandler()
 //! \return None
 //!
 //*****************************************************************************
-int main()
+void main()
 {
     //
     // Initailizing the board

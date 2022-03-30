@@ -39,12 +39,7 @@
 // Application Overview - The application is a reference to usage of DES 
 //                        DriverLib functions on CC3200. Developer/User can 
 //                        refer to this simple application and re-use the 
-//                        functions in their applications. This application can 
-//                        be used with or without "Uart Terminal".
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_DES_Demo_Application
-// or
-// docs\examples\CC32xx_DES_Demo_Application.pdf
+//                        functions in their applications.
 //
 //*****************************************************************************
 
@@ -86,10 +81,10 @@
 
 
 //
-// Undefine UserInput for taking default values from DESVector.h
+// Undefine USER_INPUT to use default values
 //
 #define USER_INPUT
-#define APPLICATION_VERSION "1.1.1"
+#define APPLICATION_VERSION "1.4.0"
 #define UART_PRINT          Report
 #define FOREVER             1
 #define APP_NAME            "DES Reference"
@@ -105,7 +100,7 @@ volatile static bool g_bContextInIntFlag;
 static volatile bool g_bDataInIntFlag;
 static volatile bool g_bDataOutIntFlag;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -354,7 +349,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -381,7 +376,7 @@ BoardInit(void)
 //! \return None
 //
 //*****************************************************************************
-int
+void 
 main()
 {
   

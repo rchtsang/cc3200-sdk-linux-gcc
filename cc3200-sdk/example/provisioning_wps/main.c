@@ -42,10 +42,6 @@
 //                          options available to be used with WPS:
 //                          1. Push Button
 //                          2. Pin Code
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Provisioning_WPS_Application
-// or
-// docs\examples\CC32xx Provisioning WPS Application.pdf
 //
 //*****************************************************************************
 
@@ -86,7 +82,7 @@
 // Local defines
 //*****************************************************************************
 #define APPLICATION_NAME        "Provisioning WPS "
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define WPS_PIN_CODE            "88664422"
 
 // Application specific status/error codes
@@ -562,11 +558,11 @@ WpsConnectPushButton()
     SlSecParams_t secParams;
     long lRetVal = -1;
 
-    secParams.Key = (signed char*)"";
+    secParams.Key = "";
     secParams.KeyLen = 0;
     secParams.Type = SL_SEC_TYPE_WPS_PBC;
 
-    lRetVal = sl_WlanConnect((signed char*)SSID_NAME, strlen(SSID_NAME), 0, &secParams,0);
+    lRetVal = sl_WlanConnect(SSID_NAME, strlen(SSID_NAME), 0, &secParams,0);
     ASSERT_ON_ERROR(lRetVal);
 
     while((!IS_CONNECTED(g_ulStatus)) || (!IS_IP_ACQUIRED(g_ulStatus)))
@@ -600,11 +596,11 @@ WpsConnectPinCode()
     SlSecParams_t secParams;
     long lRetVal = -1;
 
-    secParams.Key = (signed char*)WPS_PIN_CODE;
+    secParams.Key = WPS_PIN_CODE;
     secParams.KeyLen = strlen(WPS_PIN_CODE);
     secParams.Type = SL_SEC_TYPE_WPS_PIN;
 
-    lRetVal = sl_WlanConnect((signed char*)SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
+    lRetVal = sl_WlanConnect(SSID_NAME, strlen(SSID_NAME), 0, &secParams, 0);
     ASSERT_ON_ERROR(lRetVal);
 
     while((!IS_CONNECTED(g_ulStatus)) || (!IS_IP_ACQUIRED(g_ulStatus)))
@@ -661,7 +657,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -686,7 +682,7 @@ BoardInit(void)
 //! \return 0
 //
 //*****************************************************************************
-int
+void
 main()
 {
     long lRetVal = -1;
@@ -766,7 +762,7 @@ main()
     //
     // Wait for a while
     //
-    MAP_UtilsDelay(80000000);
+    MAP_UtilsDelay(400000000);
 
     //
     // Disconnect from the WLAN AP.
@@ -779,7 +775,7 @@ main()
         LOOP_FOREVER();
     }
 
-    MAP_UtilsDelay(8000000);
+    MAP_UtilsDelay(40000000);
 
     //
     // Turn OFF the RED LED to indicate connection disconnected
@@ -807,7 +803,7 @@ main()
     //
     // Wait for a while
     //
-    MAP_UtilsDelay(80000000);
+    MAP_UtilsDelay(400000000);
 
     //
     // Disconnect from the WLAN AP.

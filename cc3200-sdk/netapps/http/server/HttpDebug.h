@@ -30,7 +30,6 @@
  * @param ... The rest of the parameters
  */
 #ifndef NOTERM
-#include "uart_if.h"
 #define HttpDebug           Report
 #else
 #define HttpDebug(x, ...)

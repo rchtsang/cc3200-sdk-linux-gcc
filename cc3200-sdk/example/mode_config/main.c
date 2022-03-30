@@ -40,11 +40,6 @@
 // Application Overview -   This sample application demonstrates how one can
 //                          switch between different networking modes(STA, AP
 //                          or P2P).
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Mode-Configuration_Application
-// or
-// doc\examples\CC32xx_Mode-Configuration_Application.pdf
-//
 //*****************************************************************************
 
 //****************************************************************************
@@ -81,7 +76,7 @@
 #define ERR_PRINT(x) Report("Error [%d] at line [%d] in function [%s]  \n\r",x,__LINE__,__FUNCTION__)
 #endif
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define FOREVER                 1
 #define APP_NAME                "Mode Switch"
 #define SL_STOP_TIMEOUT         200
@@ -108,7 +103,7 @@
 unsigned short g_usConnectionStatus = 0;
 volatile unsigned short g_usIpObtained = 0;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -280,7 +275,7 @@ long DisplayCurrentConfig(int iMode)
     }
     else
     {
-        UART_PRINT("Could not retreive mode\n\r");
+        UART_PRINT("Could not retrieve mode\n\r");
     }
 
     return 0;
@@ -310,8 +305,8 @@ long ConfigureMode(int iMode)
 
     while(cCharacter != '1' && cCharacter != '2' && cCharacter != '3')
     {
-        UART_PRINT("Do you Want to Switch Mode\n\r1. STA mode\n\r2. AP Mode\n\r"
-                    "3. P2P Mode :");
+        UART_PRINT("Select a mode to switch to:\n\r");
+        UART_PRINT("1. STA mode\n\r2. AP Mode\n\r3. P2P Mode\n\r> ");
         cCharacter = MAP_UARTCharGet(CONSOLE);
         MAP_UARTCharPut(CONSOLE,cCharacter);
         MAP_UARTCharPut(CONSOLE,'\n');
@@ -321,7 +316,7 @@ long ConfigureMode(int iMode)
     {
         lRetVal = sl_WlanSetMode(ROLE_STA);
         ASSERT_ON_ERROR(lRetVal);
-        UART_PRINT("mode configured\n\r");
+        UART_PRINT("Mode configured\n\r");
     }
     else if(cCharacter == '2')
     {
@@ -336,18 +331,18 @@ long ConfigureMode(int iMode)
                                 (unsigned char*) pcSsidName);
         ASSERT_ON_ERROR(lRetVal);
 
-        UART_PRINT("mode configured\n\r");
+        UART_PRINT("Mode configured\n\r");
     }
     else if(cCharacter == '3')
     {
         lRetVal = sl_WlanSetMode(ROLE_P2P);
         ASSERT_ON_ERROR(lRetVal);
 
-        UART_PRINT("mode configured\n\r");
+        UART_PRINT("Mode configured\n\r");
     }
     else
     {
-       UART_PRINT("Wrong input\n\r");
+       UART_PRINT("Incorrect input\n\r");
     }
     return 0;
 }
@@ -437,7 +432,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs)|| defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -457,7 +452,7 @@ BoardInit(void)
 //****************************************************************************
 //                            MAIN FUNCTION
 //****************************************************************************
-int main()
+void main()
 {
     int iMode = 0;
     long lRetVal = -1;
@@ -484,40 +479,46 @@ int main()
     //
     DisplayBanner(APP_NAME);
 
-    //
-    // staring simplelink
-    //
-    iMode = sl_Start(NULL,NULL,NULL);
-    if(iMode < 0)
+    while(1)
     {
-        ERR_PRINT("Device start failed \n\r");
-        LOOP_FOREVER();
+        //
+        // Starting SimpleLink network processor
+        //
+        iMode = sl_Start(NULL,NULL,NULL);
+        if(iMode < 0)
+        {
+            ERR_PRINT("Failed to start network processor\n\r");
+            LOOP_FOREVER();
+        }
+
+        //
+        // Display current mode and SSID name (for AP mode)
+        //
+        lRetVal = DisplayCurrentConfig(iMode);
+        if(lRetVal < 0)
+        {
+            ERR_PRINT("Could not retrieve current device configuration\n\r");
+            LOOP_FOREVER();
+        }
+
+        //
+        // Configure the networking mode and SSID name (for AP mode)
+        //
+        lRetVal = ConfigureMode(iMode);
+        if(lRetVal < 0)
+        {
+            ERR_PRINT("Could not configure new mode\n\r");
+            LOOP_FOREVER();
+        }
+
+        UART_PRINT("Restarting network device... \n\r\n\r");
+        lRetVal = sl_Stop(SL_STOP_TIMEOUT);
+        if(lRetVal < 0)
+        {
+            ERR_PRINT("Failed to stop network processor\n\r");
+            LOOP_FOREVER();
+        }
     }
-
-    //
-    // Display current mode and ssid name(for AP mode)
-    //
-    lRetVal = DisplayCurrentConfig(iMode);
-    if(lRetVal < 0)
-    {
-        ERR_PRINT("Can not get current device config \n\r");
-        LOOP_FOREVER();
-    }
-
-    //
-    // Configure the networking mode and ssid name(for AP mode)
-    //
-    lRetVal = ConfigureMode(iMode);
-    if(lRetVal < 0)
-    {
-        ERR_PRINT("Can not get current device config \n\r");
-        LOOP_FOREVER();
-    }
-
-    UART_PRINT("Restarting network device... \n\r");
-    lRetVal = sl_Stop(SL_STOP_TIMEOUT);
-
-    LOOP_FOREVER();
 }
 
 //*****************************************************************************

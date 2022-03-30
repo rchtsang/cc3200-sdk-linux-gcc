@@ -42,10 +42,6 @@
 //                          Wi-Fi access-point. The application connects to an
 //                          access-point and ping the gateway. It also checks
 //                          for an internet connectivity by pinging "www.ti.com"
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Getting_Started_with_WLAN_Station
-// or
-// doc\examples\CC32xx_Getting_Started_with_WLAN_Station.pdf
 //
 //*****************************************************************************
 
@@ -86,7 +82,7 @@
 
 
 #define APPLICATION_NAME        "WLAN STATION"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define HOST_NAME               "www.ti.com"
 
@@ -120,7 +116,7 @@ unsigned long  g_ulGatewayIP = 0; //Network Gateway IP address
 unsigned char  g_ucConnectionSSID[SSID_LEN_MAX+1]; //Connection SSID
 unsigned char  g_ucConnectionBSSID[BSSID_LEN_MAX]; //Connection BSSID
 
-#if defined(gcc) || defined(ccs)
+#if defined(gcc)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -941,7 +937,7 @@ BoardInit(void)
 //*****************************************************************************
 //                            MAIN FUNCTION
 //*****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
 

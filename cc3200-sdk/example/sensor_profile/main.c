@@ -44,10 +44,6 @@
 //                        periods(like periodically sending some data over 
 //                        network every one hour). One can also calculate the 
 //                        hibernate current using this application.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Sensor_Profile_Application
-// or
-// docs\examples\CC32xx_Sensor_Profile_Application.pdf
 //
 //*****************************************************************************
 
@@ -98,7 +94,7 @@
 #include "pinmux.h"
 
 
-#define APPLICATION_VERSION  "1.1.1"
+#define APPLICATION_VERSION  "1.4.0"
 //
 // Values for below macros shall be modified as per access-point(AP) properties
 // SimpleLink device will connect to following AP when application is executed
@@ -313,12 +309,14 @@ void vApplicationStackOverflowHook()
 void PrintIPAddr(unsigned int uiIpaddr)
 {
     char pcIpString[16];
-    snprintf(pcIpString, sizeof(pcIpString),
-             "%u.%u.%u.%u",
-             (uiIpaddr & 0xFF000000)>>24,
-             (uiIpaddr & 0x00FF0000)>>16,
-             (uiIpaddr & 0x0000FF00)>>8,
-             (uiIpaddr & 0x000000FF));
+    unsigned char ucLen1, ucLen2, ucLen3, ucLen4;
+    ucLen1 = sprintf(pcIpString, "%u", (uiIpaddr & 0xFF000000)>>24);
+    ucLen2 = sprintf((pcIpString + ucLen1), ".%u", (uiIpaddr & 0x00FF0000)>>16);
+    ucLen3 = sprintf((pcIpString + ucLen1 + ucLen2), ".%u",
+                     (uiIpaddr & 0x0000FF00)>>8);
+    ucLen4 = sprintf((pcIpString + ucLen1 + ucLen2 + ucLen3), ".%u\0",
+                     (uiIpaddr & 0x000000FF));
+    UNUSED(ucLen4);
     UART_PRINT(pcIpString);
 }
 
@@ -893,6 +891,13 @@ void TimerGPIOTask(void *pvParameters)
             UART_PRINT("Failed to start the device \n\r");
             LOOP_FOREVER();
         }
+		
+		// Remove all profiles
+		iRetVal = sl_WlanProfileDel(0xFF);
+		if (iRetVal < 0)
+		{
+			UART_PRINT("Unable to delete all WLAN profiles\n\r");
+		}
 
         //
         // Switch to STA mode if device is not in this mode
@@ -1058,7 +1063,7 @@ no_network_connection:
 //****************************************************************************
 //                            MAIN FUNCTION
 //****************************************************************************
-int main(void)
+void main(void)
 {
     int iRetVal;
     //

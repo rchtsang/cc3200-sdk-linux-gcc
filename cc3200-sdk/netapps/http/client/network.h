@@ -70,7 +70,6 @@ typedef long int ssize_t;
 #endif /* __ssize_t_defined */
 
 #endif /* gcc */
-
 #elif defined(__NDK__) /* __linux__ */
 #include <stdint.h>
 #include <sys/socket.h>

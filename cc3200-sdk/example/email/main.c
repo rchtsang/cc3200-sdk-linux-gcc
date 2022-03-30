@@ -19,10 +19,6 @@
 //                          a button or a user-configured email through the
 //                          CLI (Command Line Interface)
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Email_Demo_Application
-// or
-// docs\examples\CC32xx_Email_Demo_Application.pdf
 //
 //*****************************************************************************
 #include <stddef.h>
@@ -74,7 +70,7 @@
 #define RX_BUFFER_OVERHEAD_SIZE          (20)
 #define NETAPP_IPCONFIG_MAC_OFFSET       (20)
 #define PLATFORM_VERSION                 (1)
-#define APPLICATION_VERSION              "1.1.1"
+#define APPLICATION_VERSION              "1.4.0"
 
 #ifndef NOTERM
 #define DispatcherUartSendPacket                Report
@@ -241,8 +237,8 @@ long SetDefaultParameters(void)
     eMailServerSetting.Family = AF_INET;
     eMailServerSetting.Port = GMAIL_HOST_PORT;
     eMailServerSetting.Ip = SL_IPV4_VAL(74,125,129,108);
-    eMailServerSetting.SecurityMethod = SL_SO_SEC_METHOD_SSLV3;
-    eMailServerSetting.SecurityCypher = SL_SEC_MASK_SSL_RSA_WITH_RC4_128_MD5;
+    eMailServerSetting.SecurityMethod = SL_SO_SEC_METHOD_TLSV1_2;
+    eMailServerSetting.SecurityCypher = SL_SEC_MASK_TLS_RSA_WITH_AES_256_CBC_SHA;
 
     lRetVal = sl_NetAppEmailSet(SL_NET_APP_EMAIL_ID,NETAPP_ADVANCED_OPT, \
                                 sizeof(SlNetAppEmailOpt_t), \
@@ -719,8 +715,8 @@ long UARTCommandHandler(char *usBuffer)
             {
                 eMailServerSetting.Family = AF_INET;
                 eMailServerSetting.Port = GMAIL_HOST_PORT;
-                eMailServerSetting.SecurityMethod = SL_SO_SEC_METHOD_SSLV3;
-                eMailServerSetting.SecurityCypher = SL_SEC_MASK_SSL_RSA_WITH_RC4_128_MD5;
+				eMailServerSetting.SecurityMethod = SL_SO_SEC_METHOD_TLSV1_2;
+				eMailServerSetting.SecurityCypher = SL_SEC_MASK_TLS_RSA_WITH_AES_256_CBC_SHA;
                 lRetVal = sl_NetAppEmailSet(SL_NET_APP_EMAIL_ID, \
                                         NETAPP_ADVANCED_OPT, \
                                         sizeof(SlNetAppEmailOpt_t), \
@@ -1131,7 +1127,7 @@ BoardInit(void)
 //
 //*****************************************************************************
 
-int main()
+void main()
 {
     long lRetVal = -1;
 

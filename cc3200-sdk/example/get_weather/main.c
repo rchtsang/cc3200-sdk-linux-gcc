@@ -40,11 +40,6 @@
 //                        server, requests for weather details of the specified
 //                        city, process data and displays it on the Hyperterminal.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Info_Center_Get_Weather_Application
-// or
-// docs\examples\CC32xx_Info_Center_Get_Weather_Application.pdf
-//
 //*****************************************************************************
 
 
@@ -95,15 +90,15 @@
 //****************************************************************************
 //                          LOCAL DEFINES                                   
 //****************************************************************************
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APP_NAME                "Get Weather"
 
 #define SLEEP_TIME              8000000
 #define SUCCESS                 0
 #define OSI_STACK_SIZE          3000
 
-#define PREFIX_BUFFER "/data/2.5/weather?q="
-#define POST_BUFFER "&mode=xml&units=imperial&appid=<APP ID>"
+#define PREFIX_BUFFER   "GET /data/2.5/weather?id="
+#define POST_BUFFER     "&mode=xml&units=imperial&APPID=<API KEY> HTTP/1.1\r\nHost:api.openweathermap.org\r\nAccept: */"
 
 #define HOST_NAME       "api.openweathermap.org"
 #define HOST_PORT       (80)
@@ -129,7 +124,7 @@ SlSecParams_t SecurityParams = {0};  // AP Security Parameters
 char acSendBuff[512];	// Buffer to send data
 char acRecvbuff[1460];  // Buffer to receive data
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -516,7 +511,7 @@ static long GetWeather(HTTPCli_Handle cli, int iSockID, char *pcCityName)
 //****************************************************************************
 void GetWeatherTask(void *pvParameters)
 {
-    int iSocketDesc = 0;
+    int iSocketDesc;
     int iRetVal;
     char acCityName[32];
     long lRetVal = -1;
@@ -723,7 +718,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -752,7 +747,7 @@ BoardInit(void)
 //! \return None.
 //
 //****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
 

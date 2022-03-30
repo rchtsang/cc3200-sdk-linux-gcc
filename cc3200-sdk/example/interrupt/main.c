@@ -43,10 +43,6 @@
 //                        decreasing priorities. With increasing priorities, 
 //                        preemption will occur; in the other two cases tail-
 //                        chaining will occur.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Interrupt_Demo_Application
-// or
-// docs\examples\CC32xx_Interrupt_Demo_Application.pdf
 //
 //*****************************************************************************
 
@@ -81,7 +77,7 @@
 
 #include "pinmux.h"
 
-#define APPLICATION_VERSION  "1.1.1"
+#define APPLICATION_VERSION  "1.4.0"
 #define APP_NAME             "Interrupt Reference"
 #define SYSCLK               80000000
 #define UART_PRINT           Report
@@ -110,7 +106,7 @@ static unsigned long g_ulTimer0APriority;
 static unsigned long g_ulTimer1APriority;
 static unsigned long g_lPriorityGrouping;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -628,7 +624,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -653,7 +649,7 @@ BoardInit(void)
 //! \return none
 //!
 //*****************************************************************************
-int
+void
 main()
 {
     //

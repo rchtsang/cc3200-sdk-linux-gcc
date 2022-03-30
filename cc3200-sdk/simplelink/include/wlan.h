@@ -107,6 +107,7 @@ extern "C" {
 
 
 /* Wlan error codes */
+#define SL_ERROR_INVALID_PARAM                                                                          (-2)
 #define  SL_ERROR_KEY_ERROR                                                                             (-3)
 #define  SL_ERROR_INVALID_ROLE                                                                          (-71)
 #define  SL_ERROR_INVALID_SECURITY_TYPE                                                                 (-84)
@@ -124,6 +125,7 @@ extern "C" {
 #define  SL_ERROR_PM_POLICY_INVALID_PARAMS                                                              (-99)
 #define  SL_ERROR_WIFI_ALREADY_DISCONNECTED                                                             (-129)
 #define  SL_ERROR_WIFI_NOT_CONNECTED                                                                    (-59)
+#define  SL_ERROR_APPLY_COMMAND_IN_DISCONNECT                                                           (-62)
 
 
 
@@ -209,14 +211,18 @@ extern "C" {
 #define SL_WLAN_CFG_P2P_PARAM_ID              (2)
 
 /* wlan AP Config set/get options */
-#define WLAN_AP_OPT_SSID                     (0)
-#define WLAN_AP_OPT_CHANNEL                  (3)
-#define WLAN_AP_OPT_HIDDEN_SSID              (4)
-#define WLAN_AP_OPT_SECURITY_TYPE            (6)
-#define WLAN_AP_OPT_PASSWORD                 (7)
-#define WLAN_GENERAL_PARAM_OPT_COUNTRY_CODE  (9)
-#define WLAN_GENERAL_PARAM_OPT_STA_TX_POWER  (10)
-#define WLAN_GENERAL_PARAM_OPT_AP_TX_POWER   (11)
+#define WLAN_AP_OPT_SSID                           (0)
+#define WLAN_AP_OPT_CHANNEL                        (3)
+#define WLAN_AP_OPT_HIDDEN_SSID                    (4)
+#define WLAN_AP_OPT_SECURITY_TYPE                  (6)
+#define WLAN_AP_OPT_PASSWORD                       (7)
+#define WLAN_GENERAL_PARAM_OPT_COUNTRY_CODE        (9)
+#define WLAN_GENERAL_PARAM_OPT_STA_TX_POWER        (10)
+#define WLAN_GENERAL_PARAM_OPT_AP_TX_POWER         (11)
+#define WLAN_GENERAL_PARAM_DISABLE_ENT_SERVER_AUTH (19)
+#define WLAN_GENERAL_PARAM_SUPP_RATES_PARAMS   (20)
+#define WLAN_GENERAL_PARAM_OPT_NO_PS_POLL_MODE      (43)
+
 
 #define WLAN_P2P_OPT_DEV_NAME                (12)
 #define WLAN_P2P_OPT_DEV_TYPE                (13)
@@ -242,6 +248,7 @@ extern "C" {
 #define SL_CONNECTION_POLICY(Auto,Fast,Open,anyP2P,autoSmartConfig)                (VAL_2_MASK(0,Auto) | VAL_2_MASK(1,Fast) | VAL_2_MASK(2,Open) | VAL_2_MASK(3,anyP2P) | VAL_2_MASK(4,autoSmartConfig))
 #define SL_SCAN_POLICY_EN(policy)            (MASK_2_VAL(0,policy))
 #define SL_SCAN_POLICY(Enable)               (VAL_2_MASK(0,Enable))
+#define SL_SCAN_POLICY_EXTEND(Enable)        (VAL_2_MASK(2,Enable))
 
 
 #define SL_NORMAL_POLICY                    (0)
@@ -550,6 +557,13 @@ typedef struct
     _u32        ScanPolicy;
 } SlWlanGetScanPolicyParams_t;
 
+typedef struct
+{
+    _u8  Enable;          /* Enable no ps poll mode - 1, Disable 0 */
+    _u8  Reserved;        /* Reserved   */
+    _u8  Padding[2];      /* Padding */
+} SlWlanNoPSPollMode_t;
+
 /*****************************************************************************/
 /* Function prototypes                                                                       */
 /*****************************************************************************/
@@ -730,12 +744,25 @@ _i16 sl_WlanProfileDel(const _i16 Index);
     After settings scan interval, an immediate scan is activated. The next scan will be based on the interval settings. \n
                     -  For example, setting scan interval to 1 minute interval use: \n
                        _u32 intervalInSeconds = 60;    \n
-                       #define SL_SCAN_ENABLE  1       \n<b>
-                       sl_WlanPolicySet(SL_POLICY_SCAN,SL_SCAN_ENABLE, (_u8 *)&intervalInSeconds,sizeof(intervalInSeconds)); </b>\n
+                       _u8   policyOpt;				\n
+                       policyOpt = SL_SCAN_POLICY(1);       \n<b>
+                       sl_WlanPolicySet(SL_POLICY_SCAN,policyOpt, (_u8 *)&intervalInSeconds,sizeof(intervalInSeconds)); </b>\n
+
+                    -  For example, setting scan interval to 1 minute interval and extend the scan (80mSec100mSec dWell time and 3 Probes) use: \n
+                       _u32 intervalInSeconds = 60;    \n
+                       _u8   policyOpt;				\n
+                       policyOpt = SL_SCAN_POLICY(1);       \n<b>
+                       policyOpt |= SL_SCAN_POLICY_EXTEND(1);	\n<b>
+                       sl_WlanPolicySet(SL_POLICY_SCAN,policyOpt, (_u8 *)&intervalInSeconds,sizeof(intervalInSeconds)); </b>\n   
+
+			-  For example, to disable extended scan, using the macro SL_SCAN_POLICY_EXTEND by itself is not sufficient.
+			  The way to disable extended scan and restore to the default settings is by invoking the following API:
+                       sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID ,WLAN_GENERAL_PARAM_OPT_SCAN_PARAMS,sizeof(slWlanScanParamCommand_t),(_u8*)&ScanParamConfig);
 
                     -  For example, disable scan:    \n
-                       #define SL_SCAN_DISABLE  0     \n<b>
-                       sl_WlanPolicySet(SL_POLICY_SCAN,SL_SCAN_DISABLE,0,0); </b>\n
+                    	  _u8   configOpt;				\n
+                       configOpt = SL_SCAN_POLICY(0);     \n<b>
+                       sl_WlanPolicySet(SL_POLICY_SCAN,configOpt,0,0); </b>\n
     \par 
     SL_POLICY_PM defines a power management policy for Station mode only:
                     -  For setting normal power management (default) policy use: <b> sl_WlanPolicySet(SL_POLICY_PM , SL_NORMAL_POLICY, NULL,0) </b>
@@ -1094,6 +1121,43 @@ _i16 sl_WlanSetMode(const _u8    mode);
                                       However, for AP - no more than INFO_ELEMENT_MAX_TOTAL_LENGTH_AP bytes can be stored for all info elements. \n
                                       For P2P GO - no more than INFO_ELEMENT_MAX_TOTAL_LENGTH_P2P_GO bytes can be stored for all info elements.  \n
                                       This option takes sl_protocol_WlanSetInfoElement_t as parameter
+                              - <b>WLAN_GENERAL_PARAM_DISABLE_ENT_SERVER_AUTH</b>
+                                      This option enables to skip server authentication and is valid for one
+                                      use, when manually connection to an enterprise network
+                              - <b>WLAN_GENERAL_PARAM_SUPP_RATES_PARAMS</b>
+                                      This option enables to mask some of the supported rates during association.	\n
+                                      Device reset is required for the first time and then the configuration becomes persistent.	\n
+                                      List of rates per bitmask is:	\n
+                                      	DRV_RATE_MASK_1_BARKER     < 0x000001	\n
+						                DRV_RATE_MASK_2_BARKER     < 0x000002	\n
+                                        DRV_RATE_MASK_5_5_CCK      < 0x000004		\n
+                                        DRV_RATE_MASK_11_CCK       < 0x000008		\n
+                                        DRV_RATE_MASK_22_PBCC      < 0x000010		\n
+                                        DRV_RATE_MASK_6_OFDM       < 0x000020		\n
+                                        DRV_RATE_MASK_9_OFDM       < 0x000040		\n
+                                        DRV_RATE_MASK_12_OFDM      < 0x000080		\n
+                                        DRV_RATE_MASK_18_OFDM      < 0x000100		\n
+                                        DRV_RATE_MASK_24_OFDM      < 0x000200		\n
+                                        DRV_RATE_MASK_36_OFDM      < 0x000400		\n
+                                        DRV_RATE_MASK_48_OFDM      < 0x000800		\n
+                                        DRV_RATE_MASK_54_OFDM      < 0x001000		\n
+                                        DRV_RATE_MASK_MCS_0_OFDM   < 0x002000	\n
+                                        DRV_RATE_MASK_MCS_1_OFDM   < 0x004000	\n
+                                        DRV_RATE_MASK_MCS_2_OFDM   < 0x008000	\n
+                                        DRV_RATE_MASK_MCS_3_OFDM   < 0x010000	\n
+                                        DRV_RATE_MASK_MCS_4_OFDM   < 0x020000	\n
+                                        DRV_RATE_MASK_MCS_5_OFDM   < 0x040000	\n
+                                        DRV_RATE_MASK_MCS_6_OFDM   < 0x080000	\n
+                                        DRV_RATE_MASK_MCS_7_OFDM   < 0x100000	\n
+
+					- <b>WLAN_GENERAL_PARAM_OPT_NO_PS_POLL_MODE</b>
+                                      This option enables to configure no PSPOLL mode.	\n
+                                      If enabled, instead of polling packets from the AP using PSPOLL, the device use NULL	\n
+                                      packets with power bit unset and return to PS when setting the power bit.	\n	
+                                      Setting no PSPOLL mode is possible only when the device is set to station mode and not connected. \n
+                                      The API is persistent over power cycle. \n
+                                      This option takes SlWlanNoPSPollMode_t as parameter. \n
+                                      
                           - <b>SL_WLAN_CFG_P2P_PARAM_ID</b>           
                               - <b>WLAN_P2P_OPT_DEV_TYPE</b> \n
                                       Set P2P Device type.Maximum length of 17 characters. Device type is published under P2P I.E, \n
@@ -1168,6 +1232,12 @@ _i16 sl_WlanSetMode(const _u8    mode);
           ScanParamConfig.rssiThershold = -70;     // only for RSSI level which is higher than -70
           sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID ,WLAN_GENERAL_PARAM_OPT_SCAN_PARAMS,sizeof(slWlanScanParamCommand_t),(_u8*)&ScanParamConfig);
     \endcode
+    \par
+    	  <b> WLAN_GENERAL_PARAM_DISABLE_ENT_SERVER_AUTH: </b>
+	\code
+		  _u8 param = 1; // 1 means disable the server authentication
+		  sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID, WLAN_GENERAL_PARAM_DISABLE_ENT_SERVER_AUTH,1,&param);
+	\endcode
 
    \par
           <b> WLAN_GENERAL_PARAM_OPT_COUNTRY_CODE: </b>
@@ -1219,6 +1289,34 @@ _i16 sl_WlanSetMode(const _u8    mode);
             sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID,WLAN_GENERAL_PARAM_OPT_INFO_ELEMENT,sizeof(sl_protocol_WlanSetInfoElement_t),(_u8* ) &infoele);
         }
         sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID,WLAN_GENERAL_PARAM_OPT_INFO_ELEMENT,sizeof(sl_protocol_WlanSetInfoElement_t),(_u8* ) &infoele);                 
+    \endcode
+    \par
+          <b> WLAN_GENERAL_PARAM_SUPP_RATES_PARAMS: </b>
+    \code
+        _u8 ratesMask[4];
+        
+        ratesMask[0] = 0xef;
+        ratesMask[1] = 0xff;
+	 ratesMask[2] = 0x3;
+
+	 // removing rates MCS5-7
+        sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID, WLAN_GENERAL_PARAM_SUPP_RATES_PARAMS, 4, ratesMask);
+    \endcode
+
+    \par
+          <b> WLAN_GENERAL_PARAM_OPT_NO_PS_POLL_MODE: </b>
+    \code
+        SlWlanNoPSPollMode_t NoPsPollMode;
+        
+        NoPsPollMode.Enable = 0;
+        
+	 // disabling noPsPoll
+        sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID, WLAN_GENERAL_PARAM_OPT_NO_PS_POLL_MODE,sizeof(SlWlanNoPSPollMode_t),(_u8 *)& NoPsPollMode);
+
+        NoPsPollMode.Enable = 1;
+        
+	 // enabling noPsPoll
+        sl_WlanSet(SL_WLAN_CFG_GENERAL_PARAM_ID, WLAN_GENERAL_PARAM_OPT_NO_PS_POLL_MODE,sizeof(SlWlanNoPSPollMode_t),(_u8 *)& NoPsPollMode);
     \endcode
 
 */
@@ -1402,6 +1500,15 @@ _i16 sl_WlanSet(const _u16 ConfigId ,const _u16 ConfigOpt,const _u16 ConfigLen,c
        listen_reg = channel_n_regs[1];
        oper_channel = channel_n_regs[2];
        oper_reg = channel_n_regs[3]; 
+    \endcode
+    \par
+           <b> WLAN_GENERAL_PARAM_OPT_NO_PS_POLL_MODE: </b>
+    \code
+       _u16   config_opt = SL_WLAN_GENERAL_PARAM_OPT_NO_PS_POLL_MODE;
+       _u16   OptionLen = sizeof(SlWlanNoPSPollMode_t);
+       SlWlanNoPSPollMode_t GetNoPsPollMode;
+
+       sl_WlanGet(SL_WLAN_CFG_GENERAL_PARAM_ID, &config_opt, &OptionLen, (_u8* )&GetNoPsPollMode);
     \endcode
 */
 

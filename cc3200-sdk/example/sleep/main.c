@@ -46,10 +46,6 @@
 //                        on executing the wifi instructions. Also there are some 
 //                        pre-requisite settings to be performed before the 
 //                        device enters the low power modes.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Sleep-DeepSleep_Application
-// or
-// docs\examples\CC32xx_Sleep-DeepSleep_Application.pdf
 //
 //*****************************************************************************
 
@@ -82,7 +78,7 @@
 #include "uart_if.h"
 #include "pinmux.h"
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define APP_NAME                "Sleep"
 #define ARM_SYSTEM_CTRL_REG     0xE000ED10
 #define SYS_CLK                 80000000
@@ -91,7 +87,7 @@
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
 //*****************************************************************************
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -292,7 +288,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -325,7 +321,7 @@ BoardInit(void)
 //! \return None.
 //
 //****************************************************************************
-int main()
+void main()
 {
     //
     // Initialize the MCU

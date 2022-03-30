@@ -91,7 +91,7 @@ GetRegisterValue(unsigned char ucRegAddr, unsigned short *pusRegValue)
     if(I2C_IF_ReadFrom(TMP006_DEV_ADDR, &ucRegAddr, 1, 
                    &ucRegData[0], 2) != 0)
     {
-        DBG_PRINT("I2C readfrom failed\n\r");
+        DBG_PRINT("TMP006 sensor I2C ReadFrom failed\n\r");
         return FAILURE;
     }
 

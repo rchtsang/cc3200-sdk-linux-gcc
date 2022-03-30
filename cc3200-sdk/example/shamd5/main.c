@@ -40,10 +40,6 @@
 //                        DriverLib functions on CC3200. Developer/User can 
 //                        refer to this simple application and re-use the 
 //                        functions in their applications
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_SHA-MD5_Demo_Application
-// or
-// docs\examples\CC32xx_SHA-MD5_Demo_Application.pdf
 //
 //*****************************************************************************
 
@@ -84,7 +80,7 @@
 
 
 #define USER_INPUT
-#define APPLICATION_VERSION  "1.1.1"
+#define APPLICATION_VERSION  "1.4.0"
 #define APP_NAME             "SHAMD5 Reference"
 #define UART_PRINT           Report
 #define FOREVER              1
@@ -100,7 +96,7 @@ volatile bool g_bParthashReadyFlag;
 volatile bool g_bInputReadyFlag;
 volatile bool g_bOutputReadyFlag;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -318,7 +314,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -344,7 +340,7 @@ BoardInit(void)
 //! \return None
 //
 //*****************************************************************************
-int
+void
 main()
 {
     unsigned int uiConfig,uiHashLength,uiDataLength;

@@ -41,10 +41,6 @@
 //                        the user and display information on the terminal. This 
 //                        example take a string as input and display the same 
 //                        when enter is received.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_UART_Demo_Application
-// or
-// docs\examples\CC32xx_UART_Demo_Application.pdf
 //
 //*****************************************************************************
 
@@ -74,7 +70,7 @@
 //*****************************************************************************
 //                          MACROS                                  
 //*****************************************************************************
-#define APPLICATION_VERSION  "1.1.1"
+#define APPLICATION_VERSION  "1.4.0"
 #define APP_NAME             "UART Echo"
 #define CONSOLE              UARTA0_BASE
 #define UartGetChar()        MAP_UARTCharGet(CONSOLE)
@@ -87,7 +83,7 @@
 //*****************************************************************************
 volatile int g_iCounter = 0;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -140,7 +136,7 @@ BoardInit(void)
   //
   // Set vector table base
   //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -169,7 +165,7 @@ BoardInit(void)
 //! \return None
 //! 
 //*****************************************************************************
-int main()
+void main()
 {
     char cString[MAX_STRING_LENGTH+1];
     char cCharacter;

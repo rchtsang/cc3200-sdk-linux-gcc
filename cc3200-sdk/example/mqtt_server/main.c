@@ -23,11 +23,6 @@
 //                          remote MQTT clients, which are connected to the same
 //                          online broker as the on-board client.
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_MQTT_Server
-// or
-// docs\examples\CC32xx_MQTT_Server.pdf
-//
 //*****************************************************************************
 
 //*****************************************************************************
@@ -71,7 +66,7 @@
 #include "pinmux.h"
 #include "server_client_cbs.h"
 
-#define APPLICATION_VERSION 	"1.1.1"
+#define APPLICATION_VERSION 	"1.4.0"
 
 /*Operate Lib in MQTT 3.1 mode.*/
 #define MQTT_3_1_1              false /*MQTT 3.1.1 */
@@ -83,12 +78,11 @@
 #define WILL_RETAIN             false
 
 /*Defining Broker IP address and port Number*/
-
-#define SERVER_ADDRESS          "messagesight.demos.ibm.com"
-
-#define PORT_NUMBER             1883
-
-#define LOOPBACK_PORT           1882
+#define SERVER_ADDRESS           "m2m.eclipse.org"
+#define SERVER_IP_ADDRESS        "192.168.178.67"
+#define PORT_NUMBER              1883
+#define SECURED_PORT_NUMBER      8883
+#define LOOPBACK_PORT            1882
 
 /*Specifying Receive time out for the Receive task*/
 #define RCV_TIMEOUT             30
@@ -143,7 +137,7 @@ void MqttClientServer(void *pvParameters);
 #if defined(ewarm)
 extern uVectorEntry __vector_table;
 #endif
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 
@@ -157,9 +151,9 @@ struct BridgeHandle {
 }BridgeHndl;
 
 /*Client ID,User Name and Password*/
-unsigned char *ClientId=(unsigned char *)"mnb";
-unsigned char *Username=(unsigned char *)"username1";
-unsigned char *Password=(unsigned char *)"pwd1";
+unsigned char *ClientId="mnb";
+unsigned char *Username="username1";
+unsigned char *Password="pwd1";
 
 /*Subscription topics and qos values*/
 char  *topic[SUB_TOPIC_COUNT]={SUB_TOPIC};
@@ -172,8 +166,8 @@ OsiMsgQ_t g_PBQueue;
 extern SlMqttServerCbs_t server_callbacks;
 extern SlMqttClientCbs_t client_callbacks;
 /*Publishing topics and messages*/
-unsigned char *pub_topic=(unsigned char *)PUB_TOPIC;
-unsigned char *data={(unsigned char*)"Push Button SW2 has been pressed on CC32XX device"};
+unsigned char *pub_topic=PUB_TOPIC;
+unsigned char *data={"Push Button SW2 has been pressed on CC32XX device"};
 
 /*Initialization structure to be used with sl_ExtMqtt_Init API*/
 SlMqttClientCtxCfg_t Mqtt_ClientCtx ={
@@ -367,7 +361,7 @@ void BoardInit(void)
     //
     // Set vector table base
     //
-    #if defined(ccs) || defined(gcc)
+    #if defined(ccs)
         IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
     #endif
     #if defined(ewarm)
@@ -745,7 +739,7 @@ skip_subscription:
 //! \return None
 //!
 //*****************************************************************************
-int
+void
 main()
 { 
     long lRetVal = -1;

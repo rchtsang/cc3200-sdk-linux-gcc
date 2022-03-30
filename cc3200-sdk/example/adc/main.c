@@ -37,14 +37,9 @@
 //
 // Application Name     - ADC
 // Application Overview - The application is a reference to usage of ADC DriverLib 
-//                        functions on CC3200. Developers/Users can refer to this 
+//                        functions on CC3200. Developers can refer to this 
 //                        simple application and re-use the functions in 
 //                        their applications.
-//
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_ADC
-// or
-// docs\examples\CC32xx_ADC.pdf
 //
 //*****************************************************************************
 
@@ -92,7 +87,7 @@ unsigned long pulAdcSamples[4096];
 //*****************************************************************************
 //                      GLOBAL VARIABLES
 //*****************************************************************************
-#if defined(gcc) || defined(ccs)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -141,7 +136,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(gcc) || defined(ccs)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -167,7 +162,7 @@ BoardInit(void)
 //! \return none
 //!
 //*****************************************************************************
-int
+void 
 main()
 {
     unsigned long  uiAdcInputPin;  
@@ -235,7 +230,7 @@ main()
                 uiChannel = ADC_CH_3;
                 break;
             default:
-                continue;
+                break;
         }
 
         //
@@ -295,7 +290,6 @@ main()
 
     }
 
-    return 0;
 }
 //*****************************************************************************
 //

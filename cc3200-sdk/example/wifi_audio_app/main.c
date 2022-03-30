@@ -41,11 +41,6 @@
 //                          Bi-directional audio transfer.Audio is streamed
 //                          from one LP and rendered on another LP over wifi. 
 //
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_Wifi_Audio_Application
-// or
-// doc\examples\CC32xx Wifi Audio Application.pdf
-//
 //*****************************************************************************
 
 //****************************************************************************
@@ -92,12 +87,12 @@
 #include "network.h"
 #include "circ_buff.h"
 #include "control.h"
-#include "audiocodec.h"
+#include "audioCodec.h"
 #include "i2s_if.h"
 #include "pcm_handler.h"
 
 
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 #define OSI_STACK_SIZE          1024
 
 //*****************************************************************************
@@ -112,7 +107,7 @@ OsiTaskHandle g_NetworkTask = NULL ;
 
 unsigned char g_loopback=1;
 
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
 extern void (* const g_pfnVectors[])(void);
 #endif
 #if defined(ewarm)
@@ -222,7 +217,7 @@ BoardInit(void)
     //
     // Set vector table base
     //
-#if defined(ccs) || defined(gcc)
+#if defined(ccs)
     MAP_IntVTableBaseSet((unsigned long)&g_pfnVectors[0]);
 #endif
 #if defined(ewarm)
@@ -317,14 +312,14 @@ int main()
     //
     // Configure PIN_01 for GPIOOutput
     //
-    //MAP_PinTypeGPIO(PIN_01, PIN_MODE_0, false);
-    // MAP_GPIODirModeSet(GPIOA1_BASE, 0x4, GPIO_DIR_MODE_OUT);
+    MAP_PinTypeGPIO(PIN_01, PIN_MODE_0, false);
+    MAP_GPIODirModeSet(GPIOA1_BASE, 0x4, GPIO_DIR_MODE_OUT);
 
     //
     // Configure PIN_02 for GPIOOutput
     //
-    //MAP_PinTypeGPIO(PIN_02, PIN_MODE_0, false);
-    // MAP_GPIODirModeSet(GPIOA1_BASE, 0x8, GPIO_DIR_MODE_OUT);
+    MAP_PinTypeGPIO(PIN_02, PIN_MODE_0, false);
+    MAP_GPIODirModeSet(GPIOA1_BASE, 0x8, GPIO_DIR_MODE_OUT);
 
 
     //Turning off Green,Orange LED after i2c writes completed - First Time

@@ -39,10 +39,6 @@
 // Application Overview - This particular application illustrates how this
 //                        device can be used as a client or server for TCP
 //                        communication.
-// Application Details  -
-// http://processors.wiki.ti.com/index.php/CC32xx_TCP_Socket_Application
-// or
-// docs\examples\CC32xx_TCP_Socket_Application.pdf
 //
 //*****************************************************************************
 
@@ -84,7 +80,7 @@
 #include "pinmux.h"
 
 #define APPLICATION_NAME        "TCP Socket"
-#define APPLICATION_VERSION     "1.1.1"
+#define APPLICATION_VERSION     "1.4.0"
 
 #define IP_ADDR             0xc0a80064 /* 192.168.0.100 */
 #define PORT_NUM            5001
@@ -376,10 +372,25 @@ void SimpleLinkSockEventHandler(SlSockEvent_t *pSock)
                   break;
             }
             break;
-
+        case SL_SOCKET_ASYNC_EVENT:
+            if (pSock->socketAsyncEvent.SockAsyncData.pExtraInfo != 0)
+            {
+                UART_PRINT("[SOCK ERROR] - sd(%d) type(%d) val(%d) pExtraInfo(%s)\n\n",
+                            pSock->socketAsyncEvent.SockAsyncData.sd,
+                            pSock->socketAsyncEvent.SockAsyncData.type,
+                            pSock->socketAsyncEvent.SockAsyncData.val,
+                            pSock->socketAsyncEvent.SockAsyncData.pExtraInfo);
+            }
+            else
+            {
+                UART_PRINT("[SOCK ERROR] - sd(%d) type(%d) val(%d) pExtraInfo(%s)\n\n",
+                            pSock->socketAsyncEvent.SockAsyncData.sd,
+                            pSock->socketAsyncEvent.SockAsyncData.type, "(None)");
+            }
+            break;
         default:
-        	UART_PRINT("[SOCK EVENT] - Unexpected Event [%x0x]\n\n",pSock->Event);
-          break;
+            UART_PRINT("[SOCK EVENT] - Unexpected Event [%x0x]\n\n",pSock->Event);
+        break;
     }
 
 }
@@ -1124,7 +1135,7 @@ BoardInit(void)
 //****************************************************************************
 //                            MAIN FUNCTION
 //****************************************************************************
-int main()
+void main()
 {
     long lRetVal = -1;
 
