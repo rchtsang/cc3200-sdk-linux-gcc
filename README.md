@@ -1,5 +1,9 @@
 # CC3200-Linux-SDK
 
+Forked from https://github.com/SiarheiVolkau/CC3200-Linux-SDK-GCC
+
+Attempting to update to cc3200-sdk-v1.5.0
+
 ## Overview
 This repo contains a reworked SDK for the CC3200 microcontroller, from Texas 
 Instruments, to work under linux with GCC compiler.
